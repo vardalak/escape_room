@@ -1,0 +1,410 @@
+{
+  "experience": {
+    "id": "training_basement",
+    "name": "Training Basement",
+    "theme": "tutorial",
+    "difficulty": "BEGINNER",
+    "estimatedDuration": 15,
+    "storyIntro": "You wake up in a dimly lit basement. The door at the top of the stairs is locked. This appears to be some kind of training facility - there are notes and hints scattered around. Someone wants you to learn how to escape. Time to put your puzzle-solving skills to the test.",
+    "storyOutro": "Congratulations! You've completed the training. You're ready for the real challenges ahead.",
+    "startingRoomId": "basement",
+    "finalRoomId": "basement",
+    "rooms": [
+      {
+        "id": "basement",
+        "name": "The Basement",
+        "theme": "tutorial",
+        "difficulty": "BEGINNER",
+        "parentExperience": "training_basement",
+        "shortDescription": "A dimly lit basement training facility",
+        "longDescription": "A small, concrete basement with fluorescent lighting. The room is sparsely furnished with basic items. A metal door at the top of the stairs is your only way out. The air smells musty, and you can hear the hum of the ventilation system.",
+        "ambientAudio": "audio/basement_ambience.mp3",
+        "lightingState": "DIM",
+        "isLocked": false,
+        "isHidden": false,
+        "isVisited": false,
+        "items": [
+          {
+            "id": "desk",
+            "name": "Wooden Desk",
+            "description": "A sturdy wooden desk with three drawers. The middle drawer has a keyhole.",
+            "category": "FURNITURE",
+            "type": "Desk",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 100, "y": 200},
+            "visualAsset": "images/items/desk.png",
+            "drawerCount": 3,
+            "hasLock": true,
+            "containedItems": [
+              {
+                "id": "desk_drawer_top",
+                "name": "Top Drawer",
+                "description": "A small drawer. It's unlocked and contains nothing useful.",
+                "category": "CONTAINER",
+                "isVisible": true,
+                "isInteractive": true,
+                "isLocked": false,
+                "containedItems": []
+              },
+              {
+                "id": "desk_drawer_middle",
+                "name": "Middle Drawer",
+                "description": "A locked drawer with a brass keyhole.",
+                "category": "CONTAINER",
+                "isVisible": true,
+                "isInteractive": true,
+                "isLocked": true,
+                "lockTriggerId": "desk_middle_drawer_lock",
+                "containedItems": [
+                  {
+                    "id": "partial_code_note",
+                    "name": "Crumpled Note",
+                    "description": "A note with messy handwriting that reads: 'Exit door code starts with: 4-2-_-_'",
+                    "category": "DOCUMENT",
+                    "isVisible": true,
+                    "isInteractive": true,
+                    "isExaminable": true,
+                    "isPortable": true,
+                    "visualAsset": "images/items/note.png",
+                    "keyId": "partial_code"
+                  }
+                ]
+              },
+              {
+                "id": "desk_drawer_bottom",
+                "name": "Bottom Drawer",
+                "description": "A deep drawer. It's unlocked and completely empty.",
+                "category": "CONTAINER",
+                "isVisible": true,
+                "isInteractive": true,
+                "isLocked": false,
+                "containedItems": []
+              }
+            ],
+            "surfaceItems": [
+              {
+                "id": "desk_lamp",
+                "name": "Desk Lamp",
+                "description": "A green banker's lamp. Upon closer inspection, you notice numbers etched into the base: '1-7'",
+                "category": "DECORATIVE",
+                "isVisible": true,
+                "isInteractive": true,
+                "isExaminable": true,
+                "isPortable": false,
+                "position": {"x": 120, "y": 180},
+                "visualAsset": "images/items/desk_lamp.png",
+                "examineTrigger": "lamp_examine_trigger"
+              }
+            ]
+          },
+          {
+            "id": "filing_cabinet",
+            "name": "Metal Filing Cabinet",
+            "description": "A grey metal filing cabinet with two drawers.",
+            "category": "FURNITURE",
+            "type": "Cabinet",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 300, "y": 200},
+            "visualAsset": "images/items/filing_cabinet.png",
+            "doorCount": 2,
+            "containedItems": [
+              {
+                "id": "filing_cabinet_top",
+                "name": "Top Drawer",
+                "description": "The top drawer of the filing cabinet. It slides open easily.",
+                "category": "CONTAINER",
+                "isVisible": true,
+                "isInteractive": true,
+                "isLocked": false,
+                "containedItems": [
+                  {
+                    "id": "brass_key",
+                    "name": "Brass Key",
+                    "description": "A small brass key with teeth. It looks like it fits a standard desk lock.",
+                    "category": "TOOL",
+                    "isVisible": true,
+                    "isInteractive": true,
+                    "isExaminable": true,
+                    "isPortable": true,
+                    "visualAsset": "images/items/brass_key.png",
+                    "keyId": "brass_key"
+                  }
+                ]
+              },
+              {
+                "id": "filing_cabinet_bottom",
+                "name": "Bottom Drawer",
+                "description": "The bottom drawer. It's empty except for some dust.",
+                "category": "CONTAINER",
+                "isVisible": true,
+                "isInteractive": true,
+                "isLocked": false,
+                "containedItems": []
+              }
+            ]
+          },
+          {
+            "id": "motivational_poster",
+            "name": "Motivational Poster",
+            "description": "A poster with bold text: 'START HERE' and an arrow pointing down. Below in smaller text: 'The filing cabinet holds the first key.'",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 200, "y": 50},
+            "visualAsset": "images/items/poster.png",
+            "examineTrigger": "poster_examine_trigger"
+          },
+          {
+            "id": "exit_door",
+            "name": "Exit Door",
+            "description": "A heavy metal door at the top of the stairs. It has a digital keypad lock with 4 digits.",
+            "category": "DOOR",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 400, "y": 100},
+            "visualAsset": "images/items/exit_door.png",
+            "lockTriggerId": "exit_door_keypad"
+          },
+          {
+            "id": "ventilation_grate",
+            "name": "Ventilation Grate",
+            "description": "A metal grate in the ceiling. You can hear air flowing through it, but it's secured with screws.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": false,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 250, "y": 20},
+            "visualAsset": "images/items/vent.png"
+          }
+        ],
+        "connectedRooms": [
+          {
+            "id": "exit_connection",
+            "connectedRoomId": "outside",
+            "direction": "north",
+            "name": "Exit Door",
+            "description": "The exit door leading out of the basement",
+            "isLocked": true,
+            "isHidden": false,
+            "requiredTrigger": "exit_door_keypad"
+          }
+        ]
+      }
+    ],
+    "triggers": [
+      {
+        "id": "poster_examine_trigger",
+        "type": "ExaminationTrigger",
+        "name": "Examine Motivational Poster",
+        "description": "Examining the poster reveals a helpful hint",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "motivational_poster",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "hint",
+            "content": "The filing cabinet holds the first key.",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "lamp_examine_trigger",
+        "type": "ExaminationTrigger",
+        "name": "Examine Desk Lamp",
+        "description": "A closer look at the lamp reveals numbers on its base",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "desk_lamp",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "clue",
+            "content": "Numbers etched on lamp base: 1-7",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "desk_middle_drawer_lock",
+        "type": "PadLock",
+        "name": "Desk Drawer Lock",
+        "description": "A brass keyhole lock on the middle drawer",
+        "isActivated": false,
+        "isVisible": true,
+        "requiredKey": "brass_key",
+        "keyType": "brass",
+        "rewards": [
+          {
+            "type": "AccessReward",
+            "unlocksDoor": "desk_drawer_middle",
+            "description": "The drawer clicks open"
+          },
+          {
+            "type": "InformationReward",
+            "dataType": "text",
+            "content": "The middle drawer is now unlocked!",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "exit_door_keypad",
+        "type": "KeypadLock",
+        "name": "Exit Door Keypad",
+        "description": "A 4-digit keypad controlling the exit door",
+        "isActivated": false,
+        "isVisible": true,
+        "code": "4217",
+        "codeLength": 4,
+        "allowedAttempts": 99,
+        "hintsOnFailure": true,
+        "rewards": [
+          {
+            "type": "AccessReward",
+            "unlocksDoor": "exit_door",
+            "description": "The door unlocks with a satisfying click!"
+          },
+          {
+            "type": "InformationReward",
+            "dataType": "text",
+            "content": "SUCCESS! The exit door is now unlocked. You can leave the basement!",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ],
+        "failureMessage": "The keypad beeps angrily. That's not the right code.",
+        "successMessage": "The keypad beeps pleasantly and you hear the lock disengage."
+      }
+    ],
+    "keys": [
+      {
+        "id": "brass_key",
+        "name": "Brass Key",
+        "description": "A small brass key with teeth. It looks like it fits a standard desk lock.",
+        "type": "PHYSICAL_KEY",
+        "category": "PHYSICAL",
+        "roomId": "basement",
+        "associatedTriggerId": "desk_middle_drawer_lock",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": false,
+        "isConsumed": false,
+        "acquiredFrom": "filing_cabinet_top",
+        "visualAsset": "images/keys/brass_key.png",
+        "keyMaterial": "brass",
+        "keyShape": "standard",
+        "keySize": "small",
+        "hasTag": false
+      },
+      {
+        "id": "partial_code",
+        "name": "Partial Exit Code",
+        "description": "Information from the crumpled note",
+        "type": "NUMERIC_CODE",
+        "category": "DIGITAL",
+        "roomId": "basement",
+        "associatedTriggerId": "exit_door_keypad",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": false,
+        "isConsumed": false,
+        "acquiredFrom": "desk_drawer_middle",
+        "visualAsset": "images/keys/code_fragment.png",
+        "code": "42??",
+        "codeLength": 4,
+        "codeHint": "Exit door code starts with: 4-2-_-_",
+        "isPartial": true
+      },
+      {
+        "id": "lamp_clue",
+        "name": "Lamp Numbers",
+        "description": "Numbers discovered on the lamp base",
+        "type": "CLUE",
+        "category": "INFORMATION",
+        "roomId": "basement",
+        "associatedTriggerId": "exit_door_keypad",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": true,
+        "isConsumed": false,
+        "acquiredFrom": "desk_lamp",
+        "visualAsset": "images/keys/clue_note.png",
+        "clueText": "Numbers on lamp base: 1-7",
+        "clueType": "direct",
+        "relatedPuzzle": "exit_door_keypad",
+        "clarityLevel": 5
+      },
+      {
+        "id": "poster_hint",
+        "name": "Poster Hint",
+        "description": "Hint from the motivational poster",
+        "type": "CLUE",
+        "category": "INFORMATION",
+        "roomId": "basement",
+        "associatedTriggerId": "none",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": true,
+        "isConsumed": false,
+        "acquiredFrom": "motivational_poster",
+        "visualAsset": "images/keys/hint.png",
+        "clueText": "The filing cabinet holds the first key",
+        "clueType": "direct",
+        "relatedPuzzle": "filing_cabinet_exploration",
+        "clarityLevel": 5
+      }
+    ],
+    "completionCriteria": [
+      {
+        "type": "trigger_activated",
+        "triggerId": "exit_door_keypad",
+        "description": "Exit door must be unlocked"
+      },
+      {
+        "type": "room_exited",
+        "roomId": "basement",
+        "description": "Player must exit through the door"
+      }
+    ],
+    "globalState": {
+      "turnCount": 0,
+      "hintsUsed": 0,
+      "itemsExamined": [],
+      "triggersActivated": [],
+      "keysAcquired": [],
+      "currentRoomId": "basement",
+      "gameStartTime": null,
+      "gameEndTime": null,
+      "isCompleted": false
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-10",
+    "author": "Escape Room System",
+    "lastModified": "2025-01-10",
+    "schemaVersion": "1.0.0"
+  }
+}
