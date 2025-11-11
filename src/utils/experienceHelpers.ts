@@ -253,26 +253,11 @@ export function handleGenericAction(
       if (key) {
         const unlockResult = stateManagerCallbacks.useKey(key.id, drawer.lockTriggerId);
         if (unlockResult.success) {
-          // Now try to open it
-          const openResult = stateManagerCallbacks.openContainer(drawerId);
-          if (openResult.success && openResult.items && openResult.items.length > 0) {
-            const itemNames = openResult.items.map((i: any) => i.name).join(', ');
-
-            // Auto-take portable items
-            openResult.items.forEach((foundItem: any) => {
-              if (foundItem.isPortable) {
-                stateManagerCallbacks.takeItem(foundItem.id, drawerId);
-              }
-            });
-
-            return {
-              type: 'alert',
-              message: `You unlock and open the drawer with the ${key.name}. Inside you find: ${itemNames}`
-            };
-          }
+          // Just unlock the drawer - don't auto-open it
+          // User needs to perform separate "open drawer" action to see contents
           return {
             type: 'alert',
-            message: `You unlock the drawer with the ${key.name}. It's empty.`
+            message: `You unlock the drawer with the ${key.name}. The drawer clicks open!`
           };
         }
       }
