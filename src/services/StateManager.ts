@@ -386,6 +386,14 @@ export class StateManager {
       });
 
       this.emit('roomChanged', { roomId, room });
+      this.emit('stateChange', {
+        id: `change_room_${roomId}_${Date.now()}`,
+        timestamp: Date.now(),
+        turn: this.experience.globalState.turnCount,
+        type: 'CHANGE_ROOM',
+        data: { roomId },
+        description: `Entered ${room?.name || roomId}`
+      });
 
       return { success: true, message: room?.longDescription || 'Entered new room' };
     }
