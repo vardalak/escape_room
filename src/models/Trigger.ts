@@ -108,6 +108,7 @@ export interface KeypadLockConfig extends TriggerConfig {
   codeLength: number;
   allowedAttempts?: number;
   hintsOnFailure?: boolean;
+  inputType?: 'numbers' | 'letters';
 }
 
 export class KeypadLock extends Trigger {
@@ -116,6 +117,7 @@ export class KeypadLock extends Trigger {
   allowedAttempts: number;
   hintsOnFailure: boolean;
   attemptCount: number;
+  inputType: 'numbers' | 'letters';
 
   constructor(config: KeypadLockConfig) {
     super({...config, type: TriggerType.KEYPAD_LOCK});
@@ -124,6 +126,7 @@ export class KeypadLock extends Trigger {
     this.allowedAttempts = config.allowedAttempts || 999;
     this.hintsOnFailure = config.hintsOnFailure || false;
     this.attemptCount = 0;
+    this.inputType = config.inputType || 'numbers';
   }
 
   checkCondition(input: string): boolean {

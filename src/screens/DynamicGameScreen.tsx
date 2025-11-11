@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, Text, View, ScrollView, TouchableOpacity, Act
 import RoomView from '../components/RoomView';
 import ExaminationModal from '../components/ExaminationModal';
 import KeypadModal from '../components/KeypadModal';
+import LetterLockModal from '../components/LetterLockModal';
 import { useGameState } from '../hooks/useGameState';
 import { playerProgressManager } from '../services/PlayerProgressManager';
 import { stateManager } from '../services';
@@ -31,6 +32,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
   const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
   const [examinationModalVisible, setExaminationModalVisible] = useState(false);
   const [keypadModalVisible, setKeypadModalVisible] = useState(false);
+  const [letterLockModalVisible, setLetterLockModalVisible] = useState(false);
   const [currentTriggerId, setCurrentTriggerId] = useState<string | null>(null);
   const [codeLength, setCodeLength] = useState(4);
 
@@ -131,7 +133,12 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
           setCodeLength((trigger as any).codeLength);
         }
 
-        setKeypadModalVisible(true);
+        // Check if it's a letter lock
+        if ((trigger as any).inputType === 'letters') {
+          setLetterLockModalVisible(true);
+        } else {
+          setKeypadModalVisible(true);
+        }
         setExaminationModalVisible(false);
         return;
       }
@@ -140,6 +147,11 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
     // Check if this is a container unlock action with a triggerId (keypad lock)
     if (actionId === 'unlock' && actionData?.triggerId) {
       const trigger = experience?.getTrigger(actionData.triggerId);
+      console.log('[DynamicGameScreen] Unlock action - triggerId:', actionData.triggerId);
+      console.log('[DynamicGameScreen] Trigger type:', (trigger as any)?.type);
+      console.log('[DynamicGameScreen] Trigger inputType:', (trigger as any)?.inputType);
+      console.log('[DynamicGameScreen] Full trigger:', JSON.stringify(trigger, null, 2));
+
       if (trigger && (trigger as any).type === 'KeypadLock') {
         setCurrentTriggerId(actionData.triggerId);
 
@@ -148,7 +160,14 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
           setCodeLength((trigger as any).codeLength);
         }
 
-        setKeypadModalVisible(true);
+        // Check if it's a letter lock
+        if ((trigger as any).inputType === 'letters') {
+          console.log('[DynamicGameScreen] Opening LETTER LOCK modal');
+          setLetterLockModalVisible(true);
+        } else {
+          console.log('[DynamicGameScreen] Opening NUMERIC keypad modal');
+          setKeypadModalVisible(true);
+        }
         setExaminationModalVisible(false);
         return;
       }
@@ -162,6 +181,13 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
       enterCode: (triggerId: string, code: string) => enterCode(triggerId, code),
     };
 
+    // Check how many actions were available before this action (passed in actionData)
+    const hadOnlyOneAction = actionData?.totalActionsAvailable === 1;
+    const wasExamineTrigger = actionId === 'examine_trigger';
+
+    console.log('[handleAction] Before action - hadOnlyOneAction:', hadOnlyOneAction, 'wasExamineTrigger:', wasExamineTrigger);
+    console.log('[handleAction] totalActionsAvailable:', actionData?.totalActionsAvailable);
+
     const result = handleGenericAction(
       actionId,
       selectedObjectId,
@@ -170,15 +196,50 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
       inventory
     );
 
+    console.log('[handleAction] Result type:', result.type);
+
     switch (result.type) {
       case 'success':
         // Action succeeded, close modal without alert
+        console.log('[handleAction] Success - closing modal');
         setExaminationModalVisible(false);
         break;
 
       case 'alert':
-        if (result.message) {
-          Alert.alert('', result.message);
+        console.log('[handleAction] Alert - wasExamineTrigger:', wasExamineTrigger, 'hadOnlyOneAction:', hadOnlyOneAction);
+        console.log('[handleAction] Action ID:', actionId);
+
+        // Actions that unlock something should keep the modal open
+        // because they create new actions (like going through a door, opening a drawer)
+        const isUnlockAction = actionId.includes('unlock');
+
+        // Check if new actions are available after this action
+        const itemDataAfter = getItemExaminationData(selectedObjectId, room, experience, inventory);
+        const hasActionsAfter = itemDataAfter.actions.length > 0;
+        console.log('[handleAction] Actions after:', itemDataAfter.actions.length, 'hasActionsAfter:', hasActionsAfter, 'isUnlockAction:', isUnlockAction);
+
+        // Close modal only if:
+        // 1. There was only one action before
+        // 2. There are no new actions available after
+        // 3. This wasn't an unlock action (which creates new actions)
+        const shouldCloseModal = hadOnlyOneAction && !hasActionsAfter && !isUnlockAction;
+
+        if (shouldCloseModal) {
+          console.log('[handleAction] Will close modal after alert dismissal (no more actions)');
+          Alert.alert('', result.message || '', [
+            {
+              text: 'OK',
+              onPress: () => {
+                console.log('[handleAction] Alert OK pressed - closing modal');
+                setExaminationModalVisible(false);
+              },
+            },
+          ]);
+        } else {
+          console.log('[handleAction] Showing alert, keeping modal open (has more actions or is unlock)');
+          if (result.message) {
+            Alert.alert('', result.message);
+          }
         }
         break;
 
@@ -192,7 +253,12 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
             setCodeLength((trigger as any).codeLength);
           }
 
-          setKeypadModalVisible(true);
+          // Check if it's a letter lock
+          if (trigger && (trigger as any).inputType === 'letters') {
+            setLetterLockModalVisible(true);
+          } else {
+            setKeypadModalVisible(true);
+          }
           setExaminationModalVisible(false);
         }
         break;
@@ -222,18 +288,29 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
   };
 
   const handleCodeSubmit = (code: string) => {
-    setKeypadModalVisible(false);
-
     if (currentTriggerId) {
       const result = enterCode(currentTriggerId, code);
       if (result.success) {
-        Alert.alert('Success!', result.message || 'Access granted!');
+        // Success - close the keypad/letter lock modals
+        setKeypadModalVisible(false);
+        setLetterLockModalVisible(false);
+        setCurrentTriggerId(null);
+
+        Alert.alert('Success!', result.message || 'Access granted!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Re-open examination modal so user can interact with the unlocked item
+              // The modal will refresh with new actions available (e.g., "Open drawer")
+              setExaminationModalVisible(true);
+            },
+          },
+        ]);
       } else {
+        // Failure - keep the modal open so user can try again
         Alert.alert('Failed', result.message || `Incorrect code: ${code}`);
       }
     }
-
-    setCurrentTriggerId(null);
   };
 
   // Get current object data
@@ -253,7 +330,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
   const actions = currentObjectData
     ? currentObjectData.actions.map((action: any) => ({
         ...action,
-        onPress: () => handleAction(action.id, action),
+        onPress: () => handleAction(action.id, { ...action, totalActionsAvailable: currentObjectData.actions.length }),
       }))
     : [];
 
@@ -323,6 +400,14 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
       <KeypadModal
         visible={keypadModalVisible}
         onClose={() => setKeypadModalVisible(false)}
+        onSubmit={handleCodeSubmit}
+        codeLength={codeLength}
+      />
+
+      {/* Letter Lock Modal */}
+      <LetterLockModal
+        visible={letterLockModalVisible}
+        onClose={() => setLetterLockModalVisible(false)}
         onSubmit={handleCodeSubmit}
         codeLength={codeLength}
       />

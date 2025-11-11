@@ -18,11 +18,12 @@ import Brick from './room/Brick';
 import Cot from './room/Cot';
 import CellBars from './room/CellBars';
 import GunRack from './room/GunRack';
-import Horse from './room/Horse';
+import StallDoor from './room/StallDoor';
 import SaddleBags from './room/SaddleBags';
-import HayBales from './room/HayBales';
 import Horseshoes from './room/Horseshoes';
 import WaterTrough from './room/WaterTrough';
+import WantedPoster from './room/WantedPoster';
+import WesternDoor from './room/WesternDoor';
 import GenericObject from './room/GenericObject';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -50,9 +51,9 @@ const roomConfigurations: { [key: string]: any } = {
     objects: [
       { id: 'cell_bars', x: 100, y: 600, scale: 0.5, width: 256, height: 512 },
       { id: 'jail_cot', x: 700, y: 600, scale: 0.5, width: 512, height: 256 },
-      { id: 'brick_wall', x: 400, y: 450, scale: 0.55, width: 512, height: 512 },
-      { id: 'loose_brick', x: 400, y: 480, scale: 0.35, width: 256, height: 256 },
-      { id: 'cell_door', x: 250, y: 300, scale: 0.65, width: 512, height: 512 },
+      { id: 'brick_wall', x: 550, y: 450, scale: 0.75, width: 512, height: 512 },
+      { id: 'loose_brick', x: 550, y: 480, scale: 0.35, width: 256, height: 256 },
+      { id: 'cell_door', x: 250, y: 300, scale: 0.65, width: 212, height: 340 },
       { id: 'barred_window', x: 650, y: 200, scale: 0.4, width: 256, height: 256 },
     ],
   },
@@ -62,17 +63,16 @@ const roomConfigurations: { [key: string]: any } = {
       { id: 'wanted_posters', x: 200, y: 250, scale: 0.6, width: 256, height: 256 },
       { id: 'gun_rack', x: 600, y: 280, scale: 0.55, width: 256, height: 256 },
       { id: 'office_window', x: 150, y: 150, scale: 0.5, width: 256, height: 256 },
-      { id: 'back_door', x: 800, y: 400, scale: 0.6, width: 512, height: 512 },
+      { id: 'back_door', x: 800, y: 400, scale: 0.6, width: 212, height: 340 },
     ],
   },
   'stables': {  // Sheriff's Last Ride - Stables
     objects: [
       { id: 'horse', x: 550, y: 550, scale: 0.55, width: 512, height: 512 },
-      { id: 'saddle_bags', x: 550, y: 580, scale: 0.35, width: 256, height: 256 },
-      { id: 'hay_bales', x: 750, y: 700, scale: 0.45, width: 256, height: 256 },
+      { id: 'saddle_bags', x: 250, y: 650, scale: 0.35, width: 256, height: 256 },
       { id: 'horseshoes', x: 200, y: 250, scale: 0.4, width: 256, height: 256 },
-      { id: 'water_trough', x: 300, y: 650, scale: 0.45, width: 512, height: 256 },
-      { id: 'stable_doors', x: 800, y: 350, scale: 0.65, width: 512, height: 512 },
+      { id: 'water_trough', x: 750, y: 700, scale: 0.45, width: 512, height: 256 },
+      { id: 'stable_doors', x: 800, y: 350, scale: 0.65, width: 212, height: 340 },
     ],
   },
 };
@@ -272,13 +272,15 @@ export default function RoomView({ onObjectTap, roomId = 'basement', items = [] 
         return <FilingCabinet key={obj.id} transform={transform} />;
       case 'motivational_poster':
       case 'poster':
-      case 'wanted_posters':
         return <Poster key={obj.id} transform={transform} />;
+      case 'wanted_posters':
+        return <WantedPoster key={obj.id} transform={transform} />;
       case 'exit_door':
+        return <ExitDoor key={obj.id} transform={transform} />;
       case 'cell_door':
       case 'back_door':
       case 'stable_doors':
-        return <ExitDoor key={obj.id} transform={transform} />;
+        return <WesternDoor key={obj.id} transform={transform} />;
       case 'ventilation_grate':
       case 'vent':
       case 'barred_window':
@@ -294,11 +296,9 @@ export default function RoomView({ onObjectTap, roomId = 'basement', items = [] 
       case 'gun_rack':
         return <GunRack key={obj.id} transform={transform} />;
       case 'horse':
-        return <Horse key={obj.id} transform={transform} />;
+        return <StallDoor key={obj.id} transform={transform} />;
       case 'saddle_bags':
         return <SaddleBags key={obj.id} transform={transform} />;
-      case 'hay_bales':
-        return <HayBales key={obj.id} transform={transform} />;
       case 'horseshoes':
         return <Horseshoes key={obj.id} transform={transform} />;
       case 'water_trough':

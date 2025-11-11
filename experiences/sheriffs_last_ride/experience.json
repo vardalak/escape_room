@@ -190,7 +190,7 @@
           {
             "id": "wanted_posters",
             "name": "Wanted Posters",
-            "description": "A cork board covered with wanted posters. One catches your eye - 'Black Bart: $500 REWARD'. The poster has numbers along the edges: 2-8-7-3.",
+            "description": "A cork board covered with faded wanted posters, their edges curling with age. Most are for cattle rustlers and bandits long since caught or dead. One poster for 'Black Bart' stands out - $500 reward, a small fortune.",
             "category": "DECORATIVE",
             "isVisible": true,
             "isInteractive": true,
@@ -202,24 +202,26 @@
           {
             "id": "gun_rack",
             "name": "Gun Rack",
-            "description": "An empty gun rack on the wall. The Sheriff must have taken all the weapons with him.",
+            "description": "A wooden gun rack mounted on the wall, its pegs worn smooth from years of use. The rifles that usually rest here are absent - their silhouettes marked by clean patches against the dusty wood.",
             "category": "DECORATIVE",
             "isVisible": true,
             "isInteractive": true,
             "isExaminable": true,
             "isPortable": false,
-            "position": {"x": 400, "y": 150}
+            "position": {"x": 400, "y": 150},
+            "examineTrigger": "examine_gun_rack"
           },
           {
             "id": "office_window",
             "name": "Office Window",
-            "description": "A window looking out onto the dusty street. You can see folks going about their business, unaware of your predicament.",
+            "description": "A large window with a view of Main Street. Through the glass you can see the general store, the saloon, and townsfolk going about their daily business. The afternoon sun streams through, casting long shadows across the office floor.",
             "category": "DECORATIVE",
             "isVisible": true,
             "isInteractive": true,
             "isExaminable": true,
             "isPortable": false,
-            "position": {"x": 150, "y": 100}
+            "position": {"x": 150, "y": 100},
+            "examineTrigger": "examine_office_window"
           },
           {
             "id": "back_door",
@@ -265,19 +267,20 @@
         "items": [
           {
             "id": "horse",
-            "name": "Your Horse",
-            "description": "Your loyal horse, ready and waiting. She nickers softly when she sees you. The saddle bags are locked with a 4-digit combination lock.",
+            "name": "Stall Door",
+            "description": "A sturdy wooden stall door. Through the slats you can see your horse inside, pawing at the ground anxiously. Her saddle bags are hanging on a hook just outside the stall.",
             "category": "FURNITURE",
             "isVisible": true,
             "isInteractive": true,
             "isExaminable": true,
             "isPortable": false,
-            "position": {"x": 250, "y": 300}
+            "position": {"x": 250, "y": 300},
+            "examineTrigger": "examine_stall_door"
           },
           {
             "id": "saddle_bags",
             "name": "Saddle Bags",
-            "description": "Leather saddle bags with a combination lock showing 4 empty slots. You need to find the right numbers!",
+            "description": "Weathered leather saddle bags hanging on a hook. A brass letter lock secures the flap - four rotating dials with letters A through Z.",
             "category": "CONTAINER",
             "isVisible": true,
             "isInteractive": true,
@@ -288,21 +291,9 @@
             "lockTriggerId": "saddle_bag_lock"
           },
           {
-            "id": "hay_bales",
-            "name": "Hay Bales",
-            "description": "Stacks of hay bales. One has something carved into it: 'Lucky number 7'",
-            "category": "DECORATIVE",
-            "isVisible": true,
-            "isInteractive": true,
-            "isExaminable": true,
-            "isPortable": false,
-            "position": {"x": 400, "y": 350},
-            "examineTrigger": "examine_hay_bales"
-          },
-          {
             "id": "horseshoes",
             "name": "Horseshoes",
-            "description": "Three horseshoes hanging on the wall. They're numbered: 2, 8, and 3. Someone wrote 'In order' beneath them.",
+            "description": "Three horseshoes hanging on the wall. They look old and well-worn.",
             "category": "DECORATIVE",
             "isVisible": true,
             "isInteractive": true,
@@ -314,13 +305,14 @@
           {
             "id": "water_trough",
             "name": "Water Trough",
-            "description": "A wooden trough filled with water for the horses.",
+            "description": "A wooden trough filled with water for the horses. The wood is weathered and worn from years of use.",
             "category": "DECORATIVE",
             "isVisible": true,
             "isInteractive": true,
             "isExaminable": true,
             "isPortable": false,
-            "position": {"x": 350, "y": 250}
+            "position": {"x": 350, "y": 250},
+            "examineTrigger": "examine_water_trough"
           },
           {
             "id": "stable_doors",
@@ -460,6 +452,48 @@
         ]
       },
       {
+        "id": "examine_gun_rack",
+        "type": "ExaminationTrigger",
+        "name": "Examine Gun Rack",
+        "description": "Inspecting the empty gun rack",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "gun_rack",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "discovery",
+            "content": "The rack is completely empty - no weapons, no ammunition. The Sheriff took everything when he left on patrol. No help here for your escape.",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "examine_office_window",
+        "type": "ExaminationTrigger",
+        "name": "Examine Office Window",
+        "description": "Looking out the office window",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "office_window",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "discovery",
+            "content": "You press your hands against the glass. The window is solid, well-built, and locked from the inside with a heavy latch. Even if you could break it, you'd cause a scene - the whole town would see. There must be a quieter way out through the back.",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
         "id": "examine_wanted_poster",
         "type": "ExaminationTrigger",
         "name": "Examine Wanted Poster",
@@ -496,8 +530,8 @@
         "codeLength": 4,
         "allowedAttempts": 99,
         "hintsOnFailure": true,
-        "successMessage": "The drawer clicks open! Inside you find the stable key!",
-        "failureMessage": "That's not the right combination. Maybe check the wanted posters?",
+        "successMessage": "The drawer clicks open!",
+        "failureMessage": "The lock doesn't budge. Wrong combination.",
         "rewards": [
           {
             "type": "AccessReward",
@@ -529,7 +563,7 @@
         "id": "examine_horseshoes",
         "type": "ExaminationTrigger",
         "name": "Examine Horseshoes",
-        "description": "The horseshoes have numbers that might be a clue",
+        "description": "The horseshoes have letters marked on them",
         "isActivated": false,
         "isVisible": true,
         "objectId": "horseshoes",
@@ -540,25 +574,25 @@
           {
             "type": "InformationReward",
             "dataType": "clue",
-            "content": "Horseshoes numbered 2, 8, 3 'in order'",
+            "content": "Each horseshoe has a letter stamped into the iron: S, W, and E.",
             "mediaType": "text",
             "revealLocation": "game_log"
           },
           {
             "type": "KeyReward",
             "keyId": "horseshoe_clue",
-            "description": "You discovered the horseshoe numbers"
+            "description": "You discovered letters from the horseshoes"
           }
         ]
       },
       {
-        "id": "examine_hay_bales",
+        "id": "examine_water_trough",
         "type": "ExaminationTrigger",
-        "name": "Examine Hay Bales",
-        "description": "Looking at the hay bales reveals a carved message",
+        "name": "Examine Water Trough",
+        "description": "The water trough has a brand mark",
         "isActivated": false,
         "isVisible": true,
-        "objectId": "hay_bales",
+        "objectId": "water_trough",
         "requiredPerception": 0,
         "revealsInformation": true,
         "onceOnly": true,
@@ -566,14 +600,35 @@
           {
             "type": "InformationReward",
             "dataType": "clue",
-            "content": "Carved into the hay bale: 'Lucky number 7'",
+            "content": "The Triple T Ranch brand is burned deep into the wood: a bold letter 'T'.",
             "mediaType": "text",
             "revealLocation": "game_log"
           },
           {
             "type": "KeyReward",
-            "keyId": "hay_clue",
-            "description": "You discovered the lucky number clue"
+            "keyId": "trough_clue",
+            "description": "You discovered the ranch brand letter"
+          }
+        ]
+      },
+      {
+        "id": "examine_stall_door",
+        "type": "ExaminationTrigger",
+        "name": "Examine Stall Door",
+        "description": "Looking at the stall door more closely",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "horse",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "discovery",
+            "content": "Your horse whinnies softly. The word 'RIDE' is scratched into the stall door frame - perhaps by a previous prisoner who also dreamed of escape. The saddle bags hang just outside on a hook, their letter lock gleaming in the lamplight.",
+            "mediaType": "text",
+            "revealLocation": "game_log"
           }
         ]
       },
@@ -581,15 +636,16 @@
         "id": "saddle_bag_lock",
         "type": "KeypadLock",
         "name": "Saddle Bag Lock",
-        "description": "A 4-digit combination lock on the saddle bags",
+        "description": "A letter combination lock on the saddle bags",
         "isActivated": false,
         "isVisible": true,
-        "code": "2837",
+        "code": "WEST",
         "codeLength": 4,
+        "inputType": "letters",
         "allowedAttempts": 99,
         "hintsOnFailure": true,
         "successMessage": "The lock springs open! Inside you find supplies and a wanted poster for the real thief. You're free!",
-        "failureMessage": "Wrong combination. Look around for number clues.",
+        "failureMessage": "The lock doesn't turn. Wrong letters.",
         "rewards": [
           {
             "type": "AccessReward",
@@ -647,8 +703,8 @@
       },
       {
         "id": "horseshoe_clue",
-        "name": "Horseshoe Numbers",
-        "description": "Numbers from the horseshoes: 2, 8, 3 in order",
+        "name": "Horseshoe Letters",
+        "description": "Letters from the horseshoes: S, W, E",
         "type": "CLUE",
         "category": "INFORMATION",
         "roomId": "stables",
@@ -658,13 +714,13 @@
         "isHidden": true,
         "isConsumed": false,
         "acquiredFrom": "horseshoes",
-        "clueText": "Horseshoes: 2, 8, 3 'in order'",
+        "clueText": "Horseshoes: S, W, E",
         "clueType": "direct"
       },
       {
-        "id": "hay_clue",
-        "name": "Lucky Number Seven",
-        "description": "The hay bale says 'Lucky number 7'",
+        "id": "trough_clue",
+        "name": "Ranch Brand",
+        "description": "The Triple T Ranch brand shows the letter 'T'",
         "type": "CLUE",
         "category": "INFORMATION",
         "roomId": "stables",
@@ -673,8 +729,8 @@
         "isRedHerring": false,
         "isHidden": true,
         "isConsumed": false,
-        "acquiredFrom": "hay_bales",
-        "clueText": "Lucky number 7",
+        "acquiredFrom": "water_trough",
+        "clueText": "Brand mark: T",
         "clueType": "direct"
       }
     ],
