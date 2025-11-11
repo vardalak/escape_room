@@ -87,6 +87,18 @@
             "surfaceItems": []
           },
           {
+            "id": "motivational_poster",
+            "name": "Motivational Poster",
+            "description": "A framed poster on the wall. It reads: 'Welcome, Trainee! Your goal: Escape through the exit door. Search the room for clues and keys. Examine objects carefully - some hide secrets. Combine what you find to unlock your way out. Good luck!'",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": false,
+            "isPortable": false,
+            "position": {"x": 200, "y": 50},
+            "visualAsset": "images/items/poster.png"
+          },
+          {
             "id": "filing_cabinet",
             "name": "Metal Filing Cabinet",
             "description": "A grey metal filing cabinet with two drawers.",
@@ -134,18 +146,6 @@
                 "containedItems": []
               }
             ]
-          },
-          {
-            "id": "motivational_poster",
-            "name": "Motivational Poster",
-            "description": "A framed poster on the wall. It reads: 'Welcome, Trainee! Your goal: Escape through the exit door. Search the room for clues and keys. Examine objects carefully - some hide secrets. Combine what you find to unlock your way out. Good luck!'",
-            "category": "DECORATIVE",
-            "isVisible": true,
-            "isInteractive": false,
-            "isExaminable": false,
-            "isPortable": false,
-            "position": {"x": 200, "y": 50},
-            "visualAsset": "images/items/poster.png"
           },
           {
             "id": "exit_door",
