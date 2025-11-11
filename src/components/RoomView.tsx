@@ -21,14 +21,7 @@ interface RoomViewProps {
   onObjectTap?: (objectId: string) => void;
 }
 
-interface ObjectPosition {
-  id: string;
-  x: number;
-  y: number;
-  scale: number;
-  width: number;
-  height: number;
-}
+// Defined inline below with objects array
 
 export default function RoomView({ onObjectTap }: RoomViewProps) {
   // Pan and zoom state
@@ -48,16 +41,26 @@ export default function RoomView({ onObjectTap }: RoomViewProps) {
   // Object positions in 2D rectangular room
   // Wall area: x=50 to x=950, y=50 to y=800
   // Floor area: x=50 to x=950, y=800 to y=950
-  // Remember: objects are centered at (x, y), so check bounds: x ± (width*scale)/2
+  // All objects use originX/originY to center their transform at the viewBox center
+  // So hitboxes should just use the full viewBox dimensions since that's what's being transformed
+  interface ObjectPosition {
+    id: string;
+    x: number;
+    y: number;
+    scale: number;
+    width: number;      // SVG viewBox size (used for rendering AND hitbox)
+    height: number;     // SVG viewBox size (used for rendering AND hitbox)
+  }
+
   const objects: ObjectPosition[] = [
-    // Wall objects (mounted on back wall)
+    // Wall objects (mounted on back wall) - these are BEHIND floor objects
     { id: 'poster', x: 200, y: 220, scale: 0.65, width: 256, height: 256 },
-    { id: 'vent', x: 200, y: 520, scale: 0.55, width: 256, height: 256 },
+    { id: 'vent', x: 180, y: 480, scale: 0.55, width: 256, height: 256 },  // Moved up and left
     { id: 'exit_door', x: 650, y: 360, scale: 0.65, width: 512, height: 512 },
 
-    // Floor objects (sitting on floor, not hanging into wall)
-    { id: 'filing_cabinet', x: 700, y: 600, scale: 0.48, width: 512, height: 512 },
-    { id: 'desk', x: 280, y: 600, scale: 0.48, width: 512, height: 512 },
+    // Floor objects (in front of wall) - these are IN FRONT
+    { id: 'filing_cabinet', x: 700, y: 650, scale: 0.48, width: 512, height: 512 },  // Moved down slightly
+    { id: 'desk', x: 350, y: 650, scale: 0.48, width: 512, height: 512 },  // Moved right and down
   ];
 
   // Calculate distance between two touches
@@ -160,13 +163,14 @@ export default function RoomView({ onObjectTap }: RoomViewProps) {
     console.log('Tap at:', { locationX, locationY, svgX, svgY, scale: currentScale, pan: currentPan });
 
     // Check if tap is within any object bounds
-    // SVG translate moves the reference point, and the G element's originX/originY centers it
-    // So the actual bounds need to account for centering
-    // Check in REVERSE order (front to back) so foreground objects take priority
+    // Objects are transformed with originX/originY at their viewBox center
+    // So the hitbox should use the full viewBox dimensions centered at (x, y)
+    // Check in REVERSE order (front to back) so floor objects (front) are checked first
+    // Order in array: wall objects first, then floor objects
+    // So reverse iteration checks floor objects first (they're in front)
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i];
-      // The transform translates to (x, y) and then scales from center
-      // So the visual bounds are centered at (x, y)
+      // Use full viewBox dimensions for hitbox
       const halfWidth = (obj.width * obj.scale) / 2;
       const halfHeight = (obj.height * obj.scale) / 2;
 
@@ -196,7 +200,11 @@ export default function RoomView({ onObjectTap }: RoomViewProps) {
 
   // Render individual object based on ID
   const renderObject = (obj: ObjectPosition) => {
-    const transform = `translate(${obj.x}, ${obj.y}) scale(${obj.scale})`;
+    // Transform: translate to position, then scale from center
+    // To scale from center, we translate by -half dimensions, scale, then translate back
+    const centerX = obj.width / 2;
+    const centerY = obj.height / 2;
+    const transform = `translate(${obj.x - centerX * obj.scale}, ${obj.y - centerY * obj.scale}) scale(${obj.scale})`;
 
     switch (obj.id) {
       case 'desk':
