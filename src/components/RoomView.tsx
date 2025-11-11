@@ -14,6 +14,15 @@ import FilingCabinet from './room/FilingCabinet';
 import Poster from './room/Poster';
 import ExitDoor from './room/ExitDoor';
 import Vent from './room/Vent';
+import Brick from './room/Brick';
+import Cot from './room/Cot';
+import CellBars from './room/CellBars';
+import GunRack from './room/GunRack';
+import Horse from './room/Horse';
+import SaddleBags from './room/SaddleBags';
+import HayBales from './room/HayBales';
+import Horseshoes from './room/Horseshoes';
+import WaterTrough from './room/WaterTrough';
 import GenericObject from './room/GenericObject';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -39,7 +48,7 @@ const roomConfigurations: { [key: string]: any } = {
   },
   'jail_cell': {  // Sheriff's Last Ride - Jail
     objects: [
-      { id: 'cell_bars', x: 150, y: 400, scale: 0.6, width: 256, height: 512 },
+      { id: 'cell_bars', x: 100, y: 600, scale: 0.5, width: 256, height: 512 },
       { id: 'jail_cot', x: 700, y: 600, scale: 0.5, width: 512, height: 256 },
       { id: 'brick_wall', x: 400, y: 450, scale: 0.55, width: 512, height: 512 },
       { id: 'loose_brick', x: 400, y: 480, scale: 0.35, width: 256, height: 256 },
@@ -51,7 +60,7 @@ const roomConfigurations: { [key: string]: any } = {
     objects: [
       { id: 'sheriffs_desk', x: 500, y: 650, scale: 0.48, width: 512, height: 512 },
       { id: 'wanted_posters', x: 200, y: 250, scale: 0.6, width: 256, height: 256 },
-      { id: 'gun_rack', x: 750, y: 280, scale: 0.55, width: 256, height: 256 },
+      { id: 'gun_rack', x: 600, y: 280, scale: 0.55, width: 256, height: 256 },
       { id: 'office_window', x: 150, y: 150, scale: 0.5, width: 256, height: 256 },
       { id: 'back_door', x: 800, y: 400, scale: 0.6, width: 512, height: 512 },
     ],
@@ -275,6 +284,25 @@ export default function RoomView({ onObjectTap, roomId = 'basement', items = [] 
       case 'barred_window':
       case 'office_window':
         return <Vent key={obj.id} transform={transform} />;
+      case 'loose_brick':
+      case 'brick_wall':
+        return <Brick key={obj.id} transform={transform} />;
+      case 'jail_cot':
+        return <Cot key={obj.id} transform={transform} />;
+      case 'cell_bars':
+        return <CellBars key={obj.id} transform={transform} />;
+      case 'gun_rack':
+        return <GunRack key={obj.id} transform={transform} />;
+      case 'horse':
+        return <Horse key={obj.id} transform={transform} />;
+      case 'saddle_bags':
+        return <SaddleBags key={obj.id} transform={transform} />;
+      case 'hay_bales':
+        return <HayBales key={obj.id} transform={transform} />;
+      case 'horseshoes':
+        return <Horseshoes key={obj.id} transform={transform} />;
+      case 'water_trough':
+        return <WaterTrough key={obj.id} transform={transform} />;
       default:
         // Use generic placeholder for objects without custom SVG
         return <GenericObject key={obj.id} transform={transform} label={obj.id} />;

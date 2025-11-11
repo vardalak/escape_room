@@ -44,21 +44,35 @@ export function getItemExaminationData(item: Item, inventory: any[], experience?
   // Container actions (but not for furniture - furniture has drawer-specific actions)
   if (item.category === 'CONTAINER' && item.category !== 'FURNITURE') {
     if (item.isLocked) {
-      // Check if player has the key
-      const hasKey = item.lockTriggerId ? checkHasKeyForTrigger(item.lockTriggerId, inventory) : false;
+      // Check if this is a keypad lock
+      const trigger = item.lockTriggerId && experience ? experience.getTrigger(item.lockTriggerId) : null;
+      const isKeypadLock = trigger && (trigger as any).type === 'KeypadLock';
 
-      if (hasKey) {
+      if (isKeypadLock) {
+        // Keypad locks can always be attempted
         data.actions.push({
           id: 'unlock',
           label: 'Unlock',
           disabled: false,
+          triggerId: item.lockTriggerId,
         });
       } else {
-        data.actions.push({
-          id: 'try_open',
-          label: 'Try to open (locked)',
-          disabled: true,
-        });
+        // Check if player has the physical key
+        const hasKey = item.lockTriggerId ? checkHasKeyForTrigger(item.lockTriggerId, inventory) : false;
+
+        if (hasKey) {
+          data.actions.push({
+            id: 'unlock',
+            label: 'Unlock',
+            disabled: false,
+          });
+        } else {
+          data.actions.push({
+            id: 'try_open',
+            label: 'Try to open (locked)',
+            disabled: true,
+          });
+        }
       }
     } else {
       data.actions.push({
@@ -73,19 +87,34 @@ export function getItemExaminationData(item: Item, inventory: any[], experience?
     // Add actions for each drawer/compartment
     item.containedItems.forEach((drawer: any, index: number) => {
       if (drawer.isLocked) {
-        const hasKey = drawer.lockTriggerId ? checkHasKeyForTrigger(drawer.lockTriggerId, inventory) : false;
-        if (hasKey) {
+        // Check if this is a keypad lock
+        const trigger = drawer.lockTriggerId && experience ? experience.getTrigger(drawer.lockTriggerId) : null;
+        const isKeypadLock = trigger && (trigger as any).type === 'KeypadLock';
+
+        if (isKeypadLock) {
+          // Keypad locks can always be attempted
           data.actions.push({
             id: `unlock_drawer_${drawer.id}`,
             label: `Unlock ${drawer.name}`,
             drawerId: drawer.id,
+            triggerId: drawer.lockTriggerId,
           });
         } else {
-          data.actions.push({
-            id: `check_drawer_${drawer.id}`,
-            label: `Check ${drawer.name} (locked)`,
-            drawerId: drawer.id,
-          });
+          // Check if player has the physical key
+          const hasKey = drawer.lockTriggerId ? checkHasKeyForTrigger(drawer.lockTriggerId, inventory) : false;
+          if (hasKey) {
+            data.actions.push({
+              id: `unlock_drawer_${drawer.id}`,
+              label: `Unlock ${drawer.name}`,
+              drawerId: drawer.id,
+            });
+          } else {
+            data.actions.push({
+              id: `check_drawer_${drawer.id}`,
+              label: `Check ${drawer.name} (locked)`,
+              drawerId: drawer.id,
+            });
+          }
         }
       } else {
         data.actions.push({

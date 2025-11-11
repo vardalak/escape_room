@@ -111,7 +111,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
     setSelectedObjectId(null);
   };
 
-  const handleAction = (actionId: string) => {
+  const handleAction = (actionId: string, actionData?: any) => {
     if (!selectedObjectId) return;
 
     // IMPORTANT: Get the current room directly from experience, not from closure
@@ -119,6 +119,40 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
     if (!room) return;
 
     console.log(`Action: ${actionId} on ${selectedObjectId}`);
+
+    // Check if this is an unlock drawer action with a triggerId (keypad lock)
+    if (actionId.startsWith('unlock_drawer_') && actionData?.triggerId) {
+      const trigger = experience?.getTrigger(actionData.triggerId);
+      if (trigger && (trigger as any).type === 'KeypadLock') {
+        setCurrentTriggerId(actionData.triggerId);
+
+        // Determine code length from trigger
+        if ((trigger as any).codeLength) {
+          setCodeLength((trigger as any).codeLength);
+        }
+
+        setKeypadModalVisible(true);
+        setExaminationModalVisible(false);
+        return;
+      }
+    }
+
+    // Check if this is a container unlock action with a triggerId (keypad lock)
+    if (actionId === 'unlock' && actionData?.triggerId) {
+      const trigger = experience?.getTrigger(actionData.triggerId);
+      if (trigger && (trigger as any).type === 'KeypadLock') {
+        setCurrentTriggerId(actionData.triggerId);
+
+        // Determine code length from trigger
+        if ((trigger as any).codeLength) {
+          setCodeLength((trigger as any).codeLength);
+        }
+
+        setKeypadModalVisible(true);
+        setExaminationModalVisible(false);
+        return;
+      }
+    }
 
     const stateCallbacks = {
       examineItem,
@@ -219,7 +253,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
   const actions = currentObjectData
     ? currentObjectData.actions.map((action: any) => ({
         ...action,
-        onPress: () => handleAction(action.id),
+        onPress: () => handleAction(action.id, action),
       }))
     : [];
 
