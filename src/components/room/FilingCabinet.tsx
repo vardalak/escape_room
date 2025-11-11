@@ -71,7 +71,13 @@ export default function FilingCabinet({ transform }: FilingCabinetProps) {
         A-M
       </Text>
 
-      {/* Drawer 2 (Bottom) - UNLOCKED */}
+      {/* Unlocked indicator on TOP drawer (open lock - green) */}
+      <G transform="translate(310, 185)">
+        <Rect x="0" y="5" width="14" height="14" fill="#4CAF50" stroke="#2E7D32" strokeWidth="2" rx="2" />
+        <Path d="M 3 5 Q 3 0 7 0 Q 11 0 11 3" fill="none" stroke="#2E7D32" strokeWidth="2" />
+      </G>
+
+      {/* Drawer 2 (Bottom) - LOCKED */}
       <Rect
         x="160"
         y="300"
@@ -99,10 +105,10 @@ export default function FilingCabinet({ transform }: FilingCabinetProps) {
         N-Z
       </Text>
 
-      {/* Unlocked indicator (open lock - green) */}
+      {/* Locked indicator on BOTTOM drawer (closed lock - red) */}
       <G transform="translate(310, 365)">
-        <Rect x="0" y="5" width="14" height="14" fill="#4CAF50" stroke="#2E7D32" strokeWidth="2" rx="2" />
-        <Path d="M 3 5 Q 3 0 7 0 Q 11 0 11 3" fill="none" stroke="#2E7D32" strokeWidth="2" />
+        <Rect x="0" y="5" width="14" height="14" fill="#F44336" stroke="#C62828" strokeWidth="2" rx="2" />
+        <Path d="M 3 5 Q 3 0 7 0 Q 11 0 11 5" fill="none" stroke="#C62828" strokeWidth="2" />
       </G>
 
       {/* Metal texture lines on drawers */}

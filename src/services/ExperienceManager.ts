@@ -32,17 +32,19 @@ export class ExperienceManager {
 
   /**
    * Load an experience from a JSON file path (for React Native Asset)
+   * NOTE: In React Native, you should import JSON files statically at the top of your file,
+   * then pass the imported data to loadExperience() instead of using this method.
+   * Dynamic requires are not supported by Metro bundler.
    */
-  async loadExperienceFromFile(filePath: string): Promise<Experience> {
-    try {
-      // In React Native, you'd typically import the JSON directly
-      // or fetch it from a URL/asset
-      const jsonData = require(filePath);
-      return this.loadExperience(jsonData);
-    } catch (error) {
-      throw new Error(`Failed to load experience from file: ${error}`);
-    }
-  }
+  // Commented out to avoid Metro bundler errors with dynamic require
+  // async loadExperienceFromFile(filePath: string): Promise<Experience> {
+  //   try {
+  //     const jsonData = require(filePath);
+  //     return this.loadExperience(jsonData);
+  //   } catch (error) {
+  //     throw new Error(`Failed to load experience from file: ${error}`);
+  //   }
+  // }
 
   /**
    * Get the currently loaded experience
