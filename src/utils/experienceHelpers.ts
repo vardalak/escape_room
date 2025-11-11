@@ -222,8 +222,6 @@ export function handleGenericAction(
     const openResult = stateManagerCallbacks.openContainer(drawerId);
     if (openResult.success) {
       if (openResult.items && openResult.items.length > 0) {
-        const itemNames = openResult.items.map((i: any) => i.name).join(', ');
-
         // Auto-take portable items
         openResult.items.forEach((foundItem: any) => {
           if (foundItem.isPortable) {
@@ -231,10 +229,20 @@ export function handleGenericAction(
           }
         });
 
-        return {
-          type: 'alert',
-          message: `You open the drawer and find: ${itemNames}`
-        };
+        // Build message with descriptions for items that have them
+        if (openResult.items.length === 1) {
+          const item = openResult.items[0];
+          const message = item.description
+            ? `You open the drawer and find: ${item.name}. ${item.description}`
+            : `You open the drawer and find: ${item.name}`;
+          return { type: 'alert', message };
+        } else {
+          const itemNames = openResult.items.map((i: any) => i.name).join(', ');
+          return {
+            type: 'alert',
+            message: `You open the drawer and find: ${itemNames}`
+          };
+        }
       } else {
         return {
           type: 'alert',

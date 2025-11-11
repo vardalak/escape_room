@@ -62,7 +62,7 @@
                   {
                     "id": "partial_code_note",
                     "name": "Crumpled Note",
-                    "description": "A note with messy handwriting that reads: 'Last two digits: 1-7'",
+                    "description": "A note with messy handwriting that reads: \"__17\"",
                     "category": "DOCUMENT",
                     "isVisible": true,
                     "isInteractive": true,
@@ -292,7 +292,7 @@
       {
         "id": "partial_code",
         "name": "Crumpled Note",
-        "description": "A note with messy handwriting that reads: 'Last two digits: 1-7'",
+        "description": "A note with messy handwriting that reads: \"__17\"",
         "type": "NUMERIC_CODE",
         "category": "DIGITAL",
         "roomId": "basement",
