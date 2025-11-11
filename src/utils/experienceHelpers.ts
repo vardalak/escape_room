@@ -24,7 +24,9 @@ export function getItemExaminationData(item: Item, inventory: any[], experience?
   };
 
   // Check if this item has an examination trigger
-  if (item.examineTrigger && experience) {
+  // Exclude DOOR category - doors handle their own examination logic
+  // Only show examine action if there's an examination trigger defined
+  if (item.examineTrigger && experience && item.category !== 'DOOR') {
     const trigger = experience.getTrigger(item.examineTrigger);
     if (trigger && !trigger.isActivated) {
       data.actions.push({
@@ -33,12 +35,6 @@ export function getItemExaminationData(item: Item, inventory: any[], experience?
         triggerId: item.examineTrigger,
       });
     }
-  } else if (item.isExaminable && item.category !== 'DOOR' && item.category !== 'CONTAINER' && item.category !== 'FURNITURE') {
-    // Add generic examination action (but not for doors/containers/furniture - they have specific actions)
-    data.actions.push({
-      id: 'examine',
-      label: 'Examine closely',
-    });
   }
 
   // Container actions (but not for furniture - furniture has drawer-specific actions)
@@ -143,11 +139,18 @@ export function getItemExaminationData(item: Item, inventory: any[], experience?
           id: 'unlock_door',
           label: 'Unlock door',
         });
-      } else {
-        data.actions.push({
-          id: 'examine_lock',
-          label: 'Examine lock',
-        });
+      }
+
+      // Add examine action for locked doors (only if they have an examination trigger)
+      if (item.examineTrigger && experience) {
+        const trigger = experience.getTrigger(item.examineTrigger);
+        if (trigger && !trigger.isActivated) {
+          data.actions.push({
+            id: 'examine_trigger',
+            label: 'Examine door',
+            triggerId: item.examineTrigger,
+          });
+        }
       }
     } else {
       // Door is unlocked, can go through
@@ -158,10 +161,6 @@ export function getItemExaminationData(item: Item, inventory: any[], experience?
           leadsTo: (item as any).leadsTo,
         });
       }
-      data.actions.push({
-        id: 'examine',
-        label: 'Examine door',
-      });
     }
   }
 

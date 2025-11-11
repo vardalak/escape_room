@@ -27,13 +27,14 @@
           {
             "id": "cell_bars",
             "name": "Iron Bars",
-            "description": "Thick iron bars with peeling paint. They're solid - no getting through these.",
+            "description": "Heavy iron bars that have stood here for decades, their black paint peeling away to reveal rust-spotted metal beneath. Through them you can see a narrow corridor lit by flickering oil lamps.",
             "category": "DECORATIVE",
             "isVisible": true,
             "isInteractive": true,
             "isExaminable": true,
             "isPortable": false,
-            "position": {"x": 100, "y": 200}
+            "position": {"x": 100, "y": 200},
+            "examineTrigger": "examine_cell_bars"
           },
           {
             "id": "jail_cot",
@@ -97,7 +98,7 @@
           {
             "id": "cell_door",
             "name": "Cell Door",
-            "description": "A heavy iron door with a simple tumbler lock. With the right tool, you might be able to pick it.",
+            "description": "A heavy iron door, its surface scarred with the scratches and dents of past prisoners. The hinges are massive, but well-oiled - someone maintains this cell regularly.",
             "category": "DOOR",
             "isVisible": true,
             "isInteractive": true,
@@ -106,7 +107,8 @@
             "isLocked": true,
             "position": {"x": 400, "y": 200},
             "lockTriggerId": "cell_door_lock",
-            "leadsTo": "sheriffs_office"
+            "leadsTo": "sheriffs_office",
+            "examineTrigger": "examine_cell_door"
           },
           {
             "id": "barred_window",
@@ -117,7 +119,8 @@
             "isInteractive": true,
             "isExaminable": true,
             "isPortable": false,
-            "position": {"x": 150, "y": 100}
+            "position": {"x": 150, "y": 100},
+            "examineTrigger": "examine_barred_window"
           }
         ],
         "connectedRooms": [
@@ -347,6 +350,69 @@
       }
     ],
     "triggers": [
+      {
+        "id": "examine_cell_bars",
+        "type": "ExaminationTrigger",
+        "name": "Examine Iron Bars",
+        "description": "Testing the bars reveals their strength",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "cell_bars",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "discovery",
+            "content": "You grip the bars and give them a shake. They're absolutely solid - centuries old and built to last. No escape this way. You'll need to find another route out.",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "examine_cell_door",
+        "type": "ExaminationTrigger",
+        "name": "Examine Cell Door",
+        "description": "Inspecting the door lock closely",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "cell_door",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "discovery",
+            "content": "You examine the lock mechanism carefully. It's a simple tumbler lock - old fashioned but sturdy. With the right tool, something thin and flexible, you could probably pick it. You've done it before...",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "examine_barred_window",
+        "type": "ExaminationTrigger",
+        "name": "Examine Barred Window",
+        "description": "Looking out the window at the street",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "barred_window",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "discovery",
+            "content": "You peer through the bars at the bustling street outside. The window is far too small to squeeze through, even if you could remove the bars.",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
       {
         "id": "examine_brick_wall",
         "type": "ExaminationTrigger",
