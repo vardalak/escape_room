@@ -178,6 +178,13 @@ export class Experience {
           }
           break;
 
+        case 'KeyReward':
+          // Acquire the key/clue
+          if (reward.keyId) {
+            this.acquireKey(reward.keyId, 'examination_trigger');
+          }
+          break;
+
         case 'ItemReward':
           // Handle item rewards
           break;

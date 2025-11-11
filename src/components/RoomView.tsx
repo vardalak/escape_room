@@ -14,16 +14,58 @@ import FilingCabinet from './room/FilingCabinet';
 import Poster from './room/Poster';
 import ExitDoor from './room/ExitDoor';
 import Vent from './room/Vent';
+import GenericObject from './room/GenericObject';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface RoomViewProps {
   onObjectTap?: (objectId: string) => void;
+  roomId?: string;
+  items?: any[];
 }
 
-// Defined inline below with objects array
+// Room-specific object configurations
+const roomConfigurations: { [key: string]: any } = {
+  'basement': {  // Training Basement
+    objects: [
+      { id: 'motivational_poster', x: 200, y: 220, scale: 0.65, width: 256, height: 256 },
+      { id: 'ventilation_grate', x: 180, y: 480, scale: 0.55, width: 256, height: 256 },
+      { id: 'exit_door', x: 650, y: 360, scale: 0.65, width: 512, height: 512 },
+      { id: 'filing_cabinet', x: 700, y: 650, scale: 0.48, width: 512, height: 512 },
+      { id: 'desk', x: 350, y: 650, scale: 0.48, width: 512, height: 512 },
+    ],
+  },
+  'jail_cell': {  // Sheriff's Last Ride - Jail
+    objects: [
+      { id: 'cell_bars', x: 150, y: 400, scale: 0.6, width: 256, height: 512 },
+      { id: 'jail_cot', x: 700, y: 600, scale: 0.5, width: 512, height: 256 },
+      { id: 'brick_wall', x: 400, y: 450, scale: 0.55, width: 512, height: 512 },
+      { id: 'cell_door', x: 250, y: 300, scale: 0.65, width: 512, height: 512 },
+      { id: 'barred_window', x: 650, y: 200, scale: 0.4, width: 256, height: 256 },
+    ],
+  },
+  'sheriffs_office': {  // Sheriff's Last Ride - Office
+    objects: [
+      { id: 'sheriffs_desk', x: 500, y: 650, scale: 0.48, width: 512, height: 512 },
+      { id: 'wanted_posters', x: 200, y: 250, scale: 0.6, width: 256, height: 256 },
+      { id: 'gun_rack', x: 750, y: 280, scale: 0.55, width: 256, height: 256 },
+      { id: 'office_window', x: 150, y: 150, scale: 0.5, width: 256, height: 256 },
+      { id: 'back_door', x: 800, y: 400, scale: 0.6, width: 512, height: 512 },
+    ],
+  },
+  'stables': {  // Sheriff's Last Ride - Stables
+    objects: [
+      { id: 'horse', x: 550, y: 550, scale: 0.55, width: 512, height: 512 },
+      { id: 'saddle_bags', x: 550, y: 580, scale: 0.35, width: 256, height: 256 },
+      { id: 'hay_bales', x: 750, y: 700, scale: 0.45, width: 256, height: 256 },
+      { id: 'horseshoes', x: 200, y: 250, scale: 0.4, width: 256, height: 256 },
+      { id: 'water_trough', x: 300, y: 650, scale: 0.45, width: 512, height: 256 },
+      { id: 'stable_doors', x: 800, y: 350, scale: 0.65, width: 512, height: 512 },
+    ],
+  },
+};
 
-export default function RoomView({ onObjectTap }: RoomViewProps) {
+export default function RoomView({ onObjectTap, roomId = 'basement', items = [] }: RoomViewProps) {
   // Pan and zoom state
   const pan = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const scale = useRef(new Animated.Value(1)).current;
@@ -38,30 +80,9 @@ export default function RoomView({ onObjectTap }: RoomViewProps) {
   const tapStartPosition = useRef({ x: 0, y: 0 });
   const isTwoFingerGesture = useRef(false);
 
-  // Object positions in 2D rectangular room
-  // Wall area: x=50 to x=950, y=50 to y=800
-  // Floor area: x=50 to x=950, y=800 to y=950
-  // All objects use originX/originY to center their transform at the viewBox center
-  // So hitboxes should just use the full viewBox dimensions since that's what's being transformed
-  interface ObjectPosition {
-    id: string;
-    x: number;
-    y: number;
-    scale: number;
-    width: number;      // SVG viewBox size (used for rendering AND hitbox)
-    height: number;     // SVG viewBox size (used for rendering AND hitbox)
-  }
-
-  const objects: ObjectPosition[] = [
-    // Wall objects (mounted on back wall) - these are BEHIND floor objects
-    { id: 'poster', x: 200, y: 220, scale: 0.65, width: 256, height: 256 },
-    { id: 'vent', x: 180, y: 480, scale: 0.55, width: 256, height: 256 },  // Moved up and left
-    { id: 'exit_door', x: 650, y: 360, scale: 0.65, width: 512, height: 512 },
-
-    // Floor objects (in front of wall) - these are IN FRONT
-    { id: 'filing_cabinet', x: 700, y: 650, scale: 0.48, width: 512, height: 512 },  // Moved down slightly
-    { id: 'desk', x: 350, y: 650, scale: 0.48, width: 512, height: 512 },  // Moved right and down
-  ];
+  // Get objects for current room
+  const roomConfig = roomConfigurations[roomId] || roomConfigurations['basement'];
+  const objects = roomConfig.objects || [];
 
   // Calculate distance between two touches
   const getDistance = (touches: any[]) => {
@@ -206,19 +227,30 @@ export default function RoomView({ onObjectTap }: RoomViewProps) {
     const centerY = obj.height / 2;
     const transform = `translate(${obj.x - centerX * obj.scale}, ${obj.y - centerY * obj.scale}) scale(${obj.scale})`;
 
+    // Try to match known SVG components
     switch (obj.id) {
       case 'desk':
+      case 'sheriffs_desk':
         return <Desk key={obj.id} transform={transform} />;
       case 'filing_cabinet':
         return <FilingCabinet key={obj.id} transform={transform} />;
+      case 'motivational_poster':
       case 'poster':
+      case 'wanted_posters':
         return <Poster key={obj.id} transform={transform} />;
       case 'exit_door':
+      case 'cell_door':
+      case 'back_door':
+      case 'stable_doors':
         return <ExitDoor key={obj.id} transform={transform} />;
+      case 'ventilation_grate':
       case 'vent':
+      case 'barred_window':
+      case 'office_window':
         return <Vent key={obj.id} transform={transform} />;
       default:
-        return null;
+        // Use generic placeholder for objects without custom SVG
+        return <GenericObject key={obj.id} transform={transform} label={obj.id} />;
     }
   };
 

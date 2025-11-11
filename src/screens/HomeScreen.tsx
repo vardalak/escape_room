@@ -27,7 +27,7 @@ export default function HomeScreen({ onSelectExperience }: HomeScreenProps) {
   const [loading, setLoading] = useState(true);
   const [completedExperiences, setCompletedExperiences] = useState<Set<string>>(new Set());
 
-  // Available experiences (for now just Training Basement, will expand later)
+  // Available experiences
   const experiences: Experience[] = [
     {
       id: 'training_basement',
@@ -37,7 +37,14 @@ export default function HomeScreen({ onSelectExperience }: HomeScreenProps) {
       estimatedDuration: 15,
       shortDescription: 'Learn the basics of escape room puzzles in this introductory experience. Perfect for beginners!',
     },
-    // Add more experiences here as they are created
+    {
+      id: 'sheriffs_last_ride',
+      name: "The Sheriff's Last Ride",
+      theme: 'Old West',
+      difficulty: 'EASY',
+      estimatedDuration: 25,
+      shortDescription: 'Wrongly accused of horse theft! Break out of jail, find evidence of your innocence, and escape town before sundown.',
+    },
   ];
 
   useEffect(() => {

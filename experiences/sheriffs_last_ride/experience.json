@@ -1,0 +1,573 @@
+{
+  "experience": {
+    "id": "sheriffs_last_ride",
+    "name": "The Sheriff's Last Ride",
+    "theme": "old_west",
+    "difficulty": "EASY",
+    "estimatedDuration": 25,
+    "storyIntro": "You've been wrongly accused of horse theft and locked up in the dusty town jail. The real thief has fled, and the Sheriff won't listen to reason. You've got to break out, find evidence, and get out of town before the hanging at sundown. Time's ticking, partner.",
+    "storyOutro": "You gallop into the sunset, free at last. The real thief's wanted poster in your saddle bag will clear your name. Sometimes justice has to take the reins into its own hands. Ride safe, partner.",
+    "startingRoomId": "jail_cell",
+    "finalRoomId": "stables",
+    "rooms": [
+      {
+        "id": "jail_cell",
+        "name": "Jail Cell",
+        "theme": "old_west",
+        "difficulty": "EASY",
+        "parentExperience": "sheriffs_last_ride",
+        "shortDescription": "A cramped jail cell with rusty bars",
+        "longDescription": "You're locked in a small jail cell. Iron bars separate you from freedom. A simple cot sits against the wall, and there's a small barred window letting in dusty sunlight. The cell door has an old lock - maybe you can pick it?",
+        "ambientAudio": "audio/jail_ambience.mp3",
+        "lightingState": "DIM",
+        "isLocked": false,
+        "isHidden": false,
+        "isVisited": false,
+        "items": [
+          {
+            "id": "cell_bars",
+            "name": "Iron Bars",
+            "description": "Thick iron bars with peeling paint. They're solid - no getting through these.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 100, "y": 200}
+          },
+          {
+            "id": "jail_cot",
+            "name": "Jail Cot",
+            "description": "A rickety wooden cot with a thin, stained mattress. Looks like it's seen better days.",
+            "category": "FURNITURE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 200, "y": 250},
+            "surfaceItems": [
+              {
+                "id": "thin_mattress",
+                "name": "Thin Mattress",
+                "description": "A lumpy, stained mattress. Lifting it reveals nothing but dust and regret.",
+                "category": "DECORATIVE",
+                "isVisible": true,
+                "isInteractive": true,
+                "isExaminable": true,
+                "isPortable": false
+              }
+            ]
+          },
+          {
+            "id": "brick_wall",
+            "name": "Brick Wall",
+            "description": "Old brick wall with crumbling mortar. One brick near the floor looks loose...",
+            "category": "FURNITURE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 300, "y": 200},
+            "containedItems": [
+              {
+                "id": "loose_brick",
+                "name": "Loose Brick",
+                "description": "A brick that wiggles when you touch it. Might be worth pulling out.",
+                "category": "CONTAINER",
+                "isVisible": true,
+                "isInteractive": true,
+                "isLocked": false,
+                "containedItems": [
+                  {
+                    "id": "hairpin",
+                    "name": "Hairpin",
+                    "description": "A bent metal hairpin. Someone must have hidden this here. Could be useful for picking locks...",
+                    "category": "TOOL",
+                    "isVisible": true,
+                    "isInteractive": true,
+                    "isExaminable": true,
+                    "isPortable": true,
+                    "keyId": "hairpin"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "cell_door",
+            "name": "Cell Door",
+            "description": "A heavy iron door with a simple tumbler lock. With the right tool, you might be able to pick it.",
+            "category": "DOOR",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "isLocked": true,
+            "position": {"x": 400, "y": 200},
+            "lockTriggerId": "cell_door_lock"
+          },
+          {
+            "id": "barred_window",
+            "name": "Barred Window",
+            "description": "A small window with iron bars. Through it you can see the main street and hear the sounds of the town.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 150, "y": 100}
+          }
+        ],
+        "connectedRooms": [
+          {
+            "id": "cell_to_office",
+            "connectedRoomId": "sheriffs_office",
+            "direction": "north",
+            "name": "Cell Door",
+            "description": "The unlocked cell door leading to the Sheriff's office",
+            "isLocked": true,
+            "isHidden": false,
+            "requiredTrigger": "cell_door_lock"
+          }
+        ]
+      },
+      {
+        "id": "sheriffs_office",
+        "name": "Sheriff's Office",
+        "theme": "old_west",
+        "difficulty": "EASY",
+        "parentExperience": "sheriffs_last_ride",
+        "shortDescription": "The Sheriff's cluttered workspace",
+        "longDescription": "The Sheriff's office is empty - he must be out on patrol. Papers and wanted posters cover the walls. A large wooden desk dominates the room, and there's a gun rack on the wall (sadly empty). The back door leads to the stables.",
+        "ambientAudio": "audio/office_ambience.mp3",
+        "lightingState": "BRIGHT",
+        "isLocked": false,
+        "isHidden": false,
+        "isVisited": false,
+        "items": [
+          {
+            "id": "sheriffs_desk",
+            "name": "Sheriff's Desk",
+            "description": "A heavy oak desk covered in papers and coffee stains. Has a locked drawer.",
+            "category": "FURNITURE",
+            "type": "Desk",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 250, "y": 300},
+            "containedItems": [
+              {
+                "id": "desk_drawer",
+                "name": "Desk Drawer",
+                "description": "A locked drawer with a small keyhole.",
+                "category": "CONTAINER",
+                "isVisible": true,
+                "isInteractive": true,
+                "isLocked": true,
+                "lockTriggerId": "desk_drawer_lock",
+                "containedItems": [
+                  {
+                    "id": "stable_key",
+                    "name": "Stable Key",
+                    "description": "An iron key labeled 'STABLES'. This will get you out back!",
+                    "category": "TOOL",
+                    "isVisible": true,
+                    "isInteractive": true,
+                    "isExaminable": true,
+                    "isPortable": true,
+                    "keyId": "stable_key"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "wanted_posters",
+            "name": "Wanted Posters",
+            "description": "A cork board covered with wanted posters. One catches your eye - 'Black Bart: $500 REWARD'. The poster has numbers along the edges: 2-8-7-3.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 100, "y": 150},
+            "examineTrigger": "examine_wanted_poster"
+          },
+          {
+            "id": "gun_rack",
+            "name": "Gun Rack",
+            "description": "An empty gun rack on the wall. The Sheriff must have taken all the weapons with him.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 400, "y": 150}
+          },
+          {
+            "id": "office_window",
+            "name": "Office Window",
+            "description": "A window looking out onto the dusty street. You can see folks going about their business, unaware of your predicament.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 150, "y": 100}
+          },
+          {
+            "id": "back_door",
+            "name": "Back Door",
+            "description": "A sturdy wooden door leading to the stables. It's locked tight.",
+            "category": "DOOR",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "isLocked": true,
+            "position": {"x": 450, "y": 250},
+            "lockTriggerId": "back_door_lock"
+          }
+        ],
+        "connectedRooms": [
+          {
+            "id": "office_to_stables",
+            "connectedRoomId": "stables",
+            "direction": "west",
+            "name": "Back Door",
+            "description": "The back door leading to the stables",
+            "isLocked": true,
+            "isHidden": false,
+            "requiredTrigger": "back_door_lock"
+          }
+        ]
+      },
+      {
+        "id": "stables",
+        "name": "Stables",
+        "theme": "old_west",
+        "difficulty": "EASY",
+        "parentExperience": "sheriffs_last_ride",
+        "shortDescription": "The town stables with horses ready to ride",
+        "longDescription": "The stables smell of hay and horses. Your faithful steed is here, already saddled and ready to go. The saddle bags are locked with a combination lock. You need to find the right numbers to get your escape supplies and clear your name!",
+        "ambientAudio": "audio/stable_ambience.mp3",
+        "lightingState": "DIM",
+        "isLocked": false,
+        "isHidden": false,
+        "isVisited": false,
+        "items": [
+          {
+            "id": "horse",
+            "name": "Your Horse",
+            "description": "Your loyal horse, ready and waiting. She nickers softly when she sees you. The saddle bags are locked with a 4-digit combination lock.",
+            "category": "FURNITURE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 250, "y": 300}
+          },
+          {
+            "id": "saddle_bags",
+            "name": "Saddle Bags",
+            "description": "Leather saddle bags with a combination lock showing 4 empty slots. You need to find the right numbers!",
+            "category": "CONTAINER",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 250, "y": 320},
+            "lockTriggerId": "saddle_bag_lock"
+          },
+          {
+            "id": "hay_bales",
+            "name": "Hay Bales",
+            "description": "Stacks of hay bales. One has something carved into it: 'Lucky number 7'",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 400, "y": 350}
+          },
+          {
+            "id": "horseshoes",
+            "name": "Horseshoes",
+            "description": "Three horseshoes hanging on the wall. They're numbered: 2, 8, and 3. Someone wrote 'In order' beneath them.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 100, "y": 150},
+            "examineTrigger": "examine_horseshoes"
+          },
+          {
+            "id": "water_trough",
+            "name": "Water Trough",
+            "description": "A wooden trough filled with water for the horses.",
+            "category": "DECORATIVE",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 350, "y": 250}
+          },
+          {
+            "id": "stable_doors",
+            "name": "Stable Doors",
+            "description": "Large wooden doors opening to the plains beyond. Freedom is so close you can taste it!",
+            "category": "DOOR",
+            "isVisible": true,
+            "isInteractive": true,
+            "isExaminable": true,
+            "isPortable": false,
+            "position": {"x": 450, "y": 250},
+            "lockTriggerId": "escape_route"
+          }
+        ],
+        "connectedRooms": [
+          {
+            "id": "stables_to_freedom",
+            "connectedRoomId": "freedom",
+            "direction": "south",
+            "name": "Stable Doors",
+            "description": "The open plains and your escape route",
+            "isLocked": true,
+            "isHidden": false,
+            "requiredTrigger": "saddle_bag_lock"
+          }
+        ]
+      }
+    ],
+    "triggers": [
+      {
+        "id": "cell_door_lock",
+        "type": "PadLock",
+        "name": "Cell Door Lock",
+        "description": "The lock on your cell door",
+        "isActivated": false,
+        "isVisible": true,
+        "requiredKey": "hairpin",
+        "keyType": "tool",
+        "successMessage": "With a satisfying click, the lock gives way! You're out of the cell!",
+        "failureMessage": "You need something to pick the lock with.",
+        "rewards": [
+          {
+            "type": "AccessReward",
+            "unlocksDoor": "cell_door",
+            "description": "The cell door swings open"
+          }
+        ]
+      },
+      {
+        "id": "examine_wanted_poster",
+        "type": "ExaminationTrigger",
+        "name": "Examine Wanted Poster",
+        "description": "Looking closely at the wanted poster reveals numbers",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "wanted_posters",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "clue",
+            "content": "The wanted poster for Black Bart has numbers: 2-8-7-3",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "desk_drawer_lock",
+        "type": "KeypadLock",
+        "name": "Desk Drawer Lock",
+        "description": "A combination lock on the desk drawer",
+        "isActivated": false,
+        "isVisible": true,
+        "code": "2873",
+        "codeLength": 4,
+        "allowedAttempts": 99,
+        "hintsOnFailure": true,
+        "successMessage": "The drawer clicks open! Inside you find the stable key!",
+        "failureMessage": "That's not the right combination. Maybe check the wanted posters?",
+        "rewards": [
+          {
+            "type": "AccessReward",
+            "unlocksDoor": "desk_drawer",
+            "description": "The drawer unlocks"
+          }
+        ]
+      },
+      {
+        "id": "back_door_lock",
+        "type": "PadLock",
+        "name": "Back Door Lock",
+        "description": "The lock on the back door to the stables",
+        "isActivated": false,
+        "isVisible": true,
+        "requiredKey": "stable_key",
+        "keyType": "iron",
+        "successMessage": "The key turns smoothly. The back door is unlocked!",
+        "failureMessage": "The door is locked. You need a key.",
+        "rewards": [
+          {
+            "type": "AccessReward",
+            "unlocksDoor": "back_door",
+            "description": "The back door unlocks"
+          }
+        ]
+      },
+      {
+        "id": "examine_horseshoes",
+        "type": "ExaminationTrigger",
+        "name": "Examine Horseshoes",
+        "description": "The horseshoes have numbers that might be a clue",
+        "isActivated": false,
+        "isVisible": true,
+        "objectId": "horseshoes",
+        "requiredPerception": 0,
+        "revealsInformation": true,
+        "onceOnly": true,
+        "rewards": [
+          {
+            "type": "InformationReward",
+            "dataType": "clue",
+            "content": "Horseshoes numbered 2, 8, 3 'in order'",
+            "mediaType": "text",
+            "revealLocation": "game_log"
+          }
+        ]
+      },
+      {
+        "id": "saddle_bag_lock",
+        "type": "KeypadLock",
+        "name": "Saddle Bag Lock",
+        "description": "A 4-digit combination lock on the saddle bags",
+        "isActivated": false,
+        "isVisible": true,
+        "code": "2837",
+        "codeLength": 4,
+        "allowedAttempts": 99,
+        "hintsOnFailure": true,
+        "successMessage": "The lock springs open! Inside you find supplies and a wanted poster for the real thief. You're free!",
+        "failureMessage": "Wrong combination. Look around for number clues.",
+        "rewards": [
+          {
+            "type": "AccessReward",
+            "unlocksDoor": "saddle_bags",
+            "description": "The saddle bags open"
+          }
+        ]
+      }
+    ],
+    "keys": [
+      {
+        "id": "hairpin",
+        "name": "Hairpin",
+        "description": "A bent metal hairpin, perfect for picking locks",
+        "type": "PHYSICAL_KEY",
+        "category": "PHYSICAL",
+        "roomId": "jail_cell",
+        "associatedTriggerId": "cell_door_lock",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": true,
+        "isConsumed": false,
+        "acquiredFrom": "loose_brick"
+      },
+      {
+        "id": "poster_code",
+        "name": "Wanted Poster Code",
+        "description": "Numbers from Black Bart's wanted poster: 2-8-7-3",
+        "type": "NUMERIC_CODE",
+        "category": "INFORMATION",
+        "roomId": "sheriffs_office",
+        "associatedTriggerId": "desk_drawer_lock",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": true,
+        "isConsumed": false,
+        "acquiredFrom": "wanted_posters",
+        "code": "2873",
+        "codeLength": 4,
+        "codeHint": "Check Black Bart's wanted poster"
+      },
+      {
+        "id": "stable_key",
+        "name": "Stable Key",
+        "description": "An iron key that opens the back door to the stables",
+        "type": "PHYSICAL_KEY",
+        "category": "PHYSICAL",
+        "roomId": "sheriffs_office",
+        "associatedTriggerId": "back_door_lock",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": false,
+        "isConsumed": false,
+        "acquiredFrom": "desk_drawer"
+      },
+      {
+        "id": "horseshoe_clue",
+        "name": "Horseshoe Numbers",
+        "description": "Numbers from the horseshoes: 2, 8, 3 in order",
+        "type": "CLUE",
+        "category": "INFORMATION",
+        "roomId": "stables",
+        "associatedTriggerId": "saddle_bag_lock",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": true,
+        "isConsumed": false,
+        "acquiredFrom": "horseshoes",
+        "clueText": "Horseshoes: 2, 8, 3 'in order'",
+        "clueType": "direct"
+      },
+      {
+        "id": "hay_clue",
+        "name": "Lucky Number Seven",
+        "description": "The hay bale says 'Lucky number 7'",
+        "type": "CLUE",
+        "category": "INFORMATION",
+        "roomId": "stables",
+        "associatedTriggerId": "saddle_bag_lock",
+        "isAcquired": false,
+        "isRedHerring": false,
+        "isHidden": true,
+        "isConsumed": false,
+        "acquiredFrom": "hay_bales",
+        "clueText": "Lucky number 7",
+        "clueType": "direct"
+      }
+    ],
+    "completionCriteria": [
+      {
+        "type": "trigger_activated",
+        "triggerId": "saddle_bag_lock",
+        "description": "Open the saddle bags to escape"
+      }
+    ],
+    "globalState": {
+      "turnCount": 0,
+      "hintsUsed": 0,
+      "itemsExamined": [],
+      "triggersActivated": [],
+      "keysAcquired": [],
+      "currentRoomId": "jail_cell",
+      "gameStartTime": null,
+      "gameEndTime": null,
+      "isCompleted": false
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-01-10",
+    "author": "Escape Room System",
+    "lastModified": "2025-01-10",
+    "schemaVersion": "1.0.0"
+  }
+}

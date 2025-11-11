@@ -8,7 +8,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build:ios": "eas build --platform ios"
+    "build:ios": "eas build --platform ios",
+    "validate": "node scripts/validate-experience.js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
@@ -24,8 +25,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
+    "@types/node": "^24.10.0",
     "@types/react": "~19.1.10",
     "eslint": "^8.57.0",
+    "ts-node": "^10.9.2",
     "typescript": "~5.9.2"
   }
 }

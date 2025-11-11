@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { experienceManager, stateManager } from '../services';
 import { Experience } from '../models/Experience';
 import trainingBasementData from '../../experiences/training_basement/experience.json';
+import sheriffsLastRideData from '../../experiences/sheriffs_last_ride/experience.json';
 
 // Map of experience IDs to their JSON data
 const experienceData: { [key: string]: any } = {
   'training_basement': trainingBasementData,
-  // Add more experiences here as they are created
+  'sheriffs_last_ride': sheriffsLastRideData,
 };
 
 // Simple game state hook

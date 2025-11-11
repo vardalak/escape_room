@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import HomeScreen from './src/screens/HomeScreen';
-import GameScreen from './src/screens/GameScreen';
+import DynamicGameScreen from './src/screens/DynamicGameScreen';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('home'); // 'home' or 'game'
@@ -21,7 +21,7 @@ export default function App() {
   }
 
   if (currentScreen === 'game' && selectedExperienceId) {
-    return <GameScreen experienceId={selectedExperienceId} onExit={handleExitToHome} />;
+    return <DynamicGameScreen experienceId={selectedExperienceId} onExit={handleExitToHome} />;
   }
 
   // Fallback

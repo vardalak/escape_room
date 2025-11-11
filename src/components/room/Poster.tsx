@@ -45,47 +45,38 @@ export default function Poster({ transform }: PosterProps) {
         rx="6"
       />
 
-      {/* START HERE text */}
+      {/* Title text */}
       <Text
         x="128"
-        y="73"
+        y="70"
         fontFamily="Arial Black, sans-serif"
-        fontSize="28"
+        fontSize="24"
         fontWeight="bold"
         fill="#FFFFFF"
         textAnchor="middle"
       >
-        START HERE
+        WELCOME
       </Text>
 
-      {/* Arrow */}
-      <Line x1="128" y1="100" x2="128" y2="140" stroke="#E74C3C" strokeWidth="5" />
-      <Polygon points="128,140 118,125 138,125" fill="#E74C3C" />
-
-      {/* Quote */}
-      <Text x="128" y="170" fontFamily="Georgia, serif" fontSize="16" fontStyle="italic" fill="#555555" textAnchor="middle">
-        Every escape
+      {/* Main instructions */}
+      <Text x="128" y="115" fontFamily="Arial, sans-serif" fontSize="13" fill="#333333" textAnchor="middle">
+        Your goal: Escape
       </Text>
-      <Text x="128" y="192" fontFamily="Georgia, serif" fontSize="16" fontStyle="italic" fill="#555555" textAnchor="middle">
-        begins with a
+      <Text x="128" y="135" fontFamily="Arial, sans-serif" fontSize="13" fill="#333333" textAnchor="middle">
+        through the exit door.
       </Text>
-      <Text x="128" y="214" fontFamily="Georgia, serif" fontSize="16" fontStyle="italic" fill="#555555" textAnchor="middle">
-        single clue...
+      <Text x="128" y="160" fontFamily="Arial, sans-serif" fontSize="12" fill="#555555" textAnchor="middle">
+        Search for clues and keys.
       </Text>
-
-      {/* Hidden code "4217" */}
-      <G opacity="0.15">
-        <Text x="50" y="118" fontFamily="monospace" fontSize="10" fill="#333333">4</Text>
-        <Text x="128" y="118" fontFamily="monospace" fontSize="10" fill="#333333">2</Text>
-        <Text x="180" y="118" fontFamily="monospace" fontSize="10" fill="#333333">1</Text>
-        <Text x="206" y="118" fontFamily="monospace" fontSize="10" fill="#333333">7</Text>
-      </G>
-
-      {/* Decorative circles */}
-      <Circle cx="50" cy="118" r="8" fill="none" stroke="#E0E0E0" strokeWidth="1.5" />
-      <Circle cx="128" cy="118" r="8" fill="none" stroke="#E0E0E0" strokeWidth="1.5" />
-      <Circle cx="180" cy="118" r="8" fill="none" stroke="#E0E0E0" strokeWidth="1.5" />
-      <Circle cx="206" cy="118" r="8" fill="none" stroke="#E0E0E0" strokeWidth="1.5" />
+      <Text x="128" y="178" fontFamily="Arial, sans-serif" fontSize="12" fill="#555555" textAnchor="middle">
+        Examine objects carefully -
+      </Text>
+      <Text x="128" y="196" fontFamily="Arial, sans-serif" fontSize="12" fill="#555555" textAnchor="middle">
+        some hide secrets.
+      </Text>
+      <Text x="128" y="220" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="bold" fill="#4A90E2" textAnchor="middle">
+        Good luck!
+      </Text>
 
       {/* Shadow (depth effect) */}
       <Rect x="13" y="13" width="236" height="236" fill="none" stroke="#000000" strokeWidth="3" opacity="0.1" transform="translate(3, 3)" />
