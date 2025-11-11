@@ -56,8 +56,14 @@ export default function KeypadModal({
       transparent={true}
       onRequestClose={handleClose}
     >
-      <SafeAreaView style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPress={handleClose}
+      >
+        <SafeAreaView style={styles.modalOverlayInner}>
+          <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Enter Code</Text>
@@ -163,8 +169,10 @@ export default function KeypadModal({
           >
             <Text style={styles.submitButtonText}>ENTER</Text>
           </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+            </View>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </TouchableOpacity>
     </Modal>
   );
 }
@@ -173,6 +181,9 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  modalOverlayInner: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

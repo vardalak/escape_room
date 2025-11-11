@@ -3,8 +3,14 @@ import { experienceManager, stateManager } from '../services';
 import { Experience } from '../models/Experience';
 import trainingBasementData from '../../experiences/training_basement/experience.json';
 
+// Map of experience IDs to their JSON data
+const experienceData: { [key: string]: any } = {
+  'training_basement': trainingBasementData,
+  // Add more experiences here as they are created
+};
+
 // Simple game state hook
-export function useGameState() {
+export function useGameState(experienceId: string = 'training_basement') {
   const [experience, setExperience] = useState<Experience | null>(null);
   const [loading, setLoading] = useState(true);
   const [inventory, setInventory] = useState<any[]>([]);
@@ -15,8 +21,13 @@ export function useGameState() {
   useEffect(() => {
     async function loadGame() {
       try {
-        console.log('Loading experience data:', trainingBasementData);
-        const exp = await experienceManager.loadExperience(trainingBasementData);
+        const data = experienceData[experienceId];
+        if (!data) {
+          throw new Error(`Experience "${experienceId}" not found`);
+        }
+
+        console.log('Loading experience data:', data);
+        const exp = await experienceManager.loadExperience(data);
         console.log('Experience loaded successfully:', exp);
         stateManager.setExperience(exp);
         exp.startGame();
@@ -48,7 +59,7 @@ export function useGameState() {
     }
 
     loadGame();
-  }, []);
+  }, [experienceId]);
 
   const updateInventory = useCallback(() => {
     const exp = stateManager.getExperience();

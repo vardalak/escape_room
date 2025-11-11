@@ -40,8 +40,14 @@ export default function ExaminationModal({
       transparent={true}
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <SafeAreaView style={styles.modalOverlayInner}>
+          <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>{objectName}</Text>
@@ -90,8 +96,10 @@ export default function ExaminationModal({
           <View style={styles.footer}>
             <Text style={styles.footerText}>Tap outside or X to close</Text>
           </View>
-        </View>
-      </SafeAreaView>
+            </View>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </TouchableOpacity>
     </Modal>
   );
 }
@@ -100,17 +108,19 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.85)',
+  },
+  modalOverlayInner: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
     width: '90%',
-    maxHeight: '80%',
+    maxHeight: '95%',
     backgroundColor: '#2A2A2A',
     borderRadius: 16,
     borderWidth: 2,
     borderColor: '#4A90E2',
-    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -144,7 +154,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   content: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    maxHeight: '100%',
   },
   description: {
     fontSize: 16,
@@ -154,6 +167,7 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     marginTop: 10,
+    paddingBottom: 10,
   },
   actionsHeader: {
     fontSize: 18,
