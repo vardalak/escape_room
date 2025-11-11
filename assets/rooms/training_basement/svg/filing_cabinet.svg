@@ -1,0 +1,94 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Isometric Filing Cabinet with 2 Drawers -->
+
+  <!-- Cabinet Top -->
+  <polygon
+    points="256,120 160,170 256,220 352,170"
+    fill="#B0B0B0"
+    stroke="#808080"
+    stroke-width="3"/>
+
+  <!-- Left side of cabinet -->
+  <polygon
+    points="160,170 160,430 256,480 256,220"
+    fill="#909090"
+    stroke="#707070"
+    stroke-width="3"/>
+
+  <!-- Right side of cabinet -->
+  <polygon
+    points="256,220 256,480 352,430 352,170"
+    fill="#A8A8A8"
+    stroke="#888888"
+    stroke-width="3"/>
+
+  <!-- Drawer divider line -->
+  <line x1="160" y1="300" x2="256" y2="350" stroke="#707070" stroke-width="2"/>
+  <line x1="256" y1="350" x2="352" y2="300" stroke="#888888" stroke-width="2"/>
+
+  <!-- Top Drawer Front -->
+  <polygon
+    points="270,235 270,335 338,300 338,200"
+    fill="#C0C0C0"
+    stroke="#909090"
+    stroke-width="2"/>
+
+  <!-- Top Drawer Handle -->
+  <rect x="295" y="260" width="30" height="8"
+    fill="#606060"
+    stroke="#404040"
+    stroke-width="1"
+    rx="2"/>
+
+  <!-- Top Drawer Label Holder -->
+  <rect x="290" y="240" width="40" height="15"
+    fill="#FFFFFF"
+    stroke="#909090"
+    stroke-width="1"
+    rx="1"/>
+  <text x="310" y="250" font-family="Arial, sans-serif" font-size="10" fill="#333333" text-anchor="middle">A-M</text>
+
+  <!-- Bottom Drawer Front - UNLOCKED (contains brass key) -->
+  <polygon
+    points="270,365 270,465 338,430 338,330"
+    fill="#C0C0C0"
+    stroke="#909090"
+    stroke-width="2"/>
+
+  <!-- Bottom Drawer Handle -->
+  <rect x="295" y="390" width="30" height="8"
+    fill="#606060"
+    stroke="#404040"
+    stroke-width="1"
+    rx="2"/>
+
+  <!-- Bottom Drawer Label Holder -->
+  <rect x="290" y="370" width="40" height="15"
+    fill="#FFFFFF"
+    stroke="#909090"
+    stroke-width="1"
+    rx="1"/>
+  <text x="310" y="380" font-family="Arial, sans-serif" font-size="10" fill="#333333" text-anchor="middle">N-Z</text>
+
+  <!-- Unlocked indicator (open lock) -->
+  <g transform="translate(318, 388)">
+    <rect x="0" y="4" width="8" height="8" fill="#4CAF50" stroke="#2E7D32" stroke-width="1" rx="1"/>
+    <path d="M 2 4 Q 2 0 4 0 Q 6 0 6 2"
+      fill="none"
+      stroke="#2E7D32"
+      stroke-width="1.5"/>
+  </g>
+
+  <!-- Left side drawer details -->
+  <line x1="165" y1="235" x2="165" y2="295" stroke="#808080" stroke-width="1" opacity="0.5"/>
+  <line x1="165" y1="365" x2="165" y2="425" stroke="#808080" stroke-width="1" opacity="0.5"/>
+
+  <!-- Shadow under cabinet -->
+  <ellipse cx="256" cy="485" rx="85" ry="12" fill="#000000" opacity="0.25"/>
+
+  <!-- Subtle metal texture lines on front -->
+  <line x1="270" y1="250" x2="338" y2="215" stroke="#D0D0D0" stroke-width="0.5" opacity="0.4"/>
+  <line x1="270" y1="270" x2="338" y2="235" stroke="#A0A0A0" stroke-width="0.5" opacity="0.3"/>
+  <line x1="270" y1="380" x2="338" y2="345" stroke="#D0D0D0" stroke-width="0.5" opacity="0.4"/>
+  <line x1="270" y1="400" x2="338" y2="365" stroke="#A0A0A0" stroke-width="0.5" opacity="0.3"/>
+</svg>

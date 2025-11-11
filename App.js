@@ -1,30 +1,29 @@
-import React from 'react';
-import { GameStateProvider, useGameState, GAME_STATES } from './src/context/GameStateContext';
+import React, { useState } from 'react';
+import HomeScreen from './src/screens/HomeScreen';
+import DynamicGameScreen from './src/screens/DynamicGameScreen';
 
-// Import screen components
-import MainMenu from './src/components/screens/MainMenu';
-
-/**
- * GameRouter - Routes to the correct screen based on game state
- */
-function GameRouter() {
-  const { gameState } = useGameState();
-
-  switch (gameState) {
-    case GAME_STATES.MAIN_MENU:
-      return <MainMenu />;
-    default:
-      return <MainMenu />;
-  }
-}
-
-/**
- * App - Root component with context providers
- */
 export default function App() {
-  return (
-    <GameStateProvider>
-      <GameRouter />
-    </GameStateProvider>
-  );
+  const [currentScreen, setCurrentScreen] = useState('home'); // 'home' or 'game'
+  const [selectedExperienceId, setSelectedExperienceId] = useState(null);
+
+  const handleSelectExperience = (experienceId) => {
+    setSelectedExperienceId(experienceId);
+    setCurrentScreen('game');
+  };
+
+  const handleExitToHome = () => {
+    setSelectedExperienceId(null);
+    setCurrentScreen('home');
+  };
+
+  if (currentScreen === 'home') {
+    return <HomeScreen onSelectExperience={handleSelectExperience} />;
+  }
+
+  if (currentScreen === 'game' && selectedExperienceId) {
+    return <DynamicGameScreen experienceId={selectedExperienceId} onExit={handleExitToHome} />;
+  }
+
+  // Fallback
+  return <HomeScreen onSelectExperience={handleSelectExperience} />;
 }

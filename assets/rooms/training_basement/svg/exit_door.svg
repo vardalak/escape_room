@@ -1,0 +1,146 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Isometric Exit Door with Keypad -->
+
+  <!-- Door Frame (visible edge) -->
+  <polygon
+    points="150,100 150,450 180,465 180,115"
+    fill="#4A4A4A"
+    stroke="#2A2A2A"
+    stroke-width="2"/>
+
+  <polygon
+    points="330,115 330,465 360,450 360,100"
+    fill="#5A5A5A"
+    stroke="#3A3A3A"
+    stroke-width="2"/>
+
+  <!-- Door top frame -->
+  <polygon
+    points="150,100 180,115 330,115 360,100"
+    fill="#6A6A6A"
+    stroke="#4A4A4A"
+    stroke-width="2"/>
+
+  <!-- Main Door Surface -->
+  <polygon
+    points="180,115 180,465 330,465 330,115"
+    fill="#7D4E3C"
+    stroke="#5A3828"
+    stroke-width="3"/>
+
+  <!-- Door panels (raised rectangles) -->
+  <rect x="195" y="140" width="120" height="90"
+    fill="#8B5A45"
+    stroke="#5A3828"
+    stroke-width="2"
+    rx="3"/>
+
+  <rect x="195" y="250" width="120" height="90"
+    fill="#8B5A45"
+    stroke="#5A3828"
+    stroke-width="2"
+    rx="3"/>
+
+  <rect x="195" y="360" width="120" height="85"
+    fill="#8B5A45"
+    stroke="#5A3828"
+    stroke-width="2"
+    rx="3"/>
+
+  <!-- Wood grain texture on panels -->
+  <line x1="195" y1="165" x2="315" y2="165" stroke="#6B4535" stroke-width="0.5" opacity="0.4"/>
+  <line x1="195" y1="185" x2="315" y2="185" stroke="#6B4535" stroke-width="0.5" opacity="0.3"/>
+  <line x1="195" y1="275" x2="315" y2="275" stroke="#6B4535" stroke-width="0.5" opacity="0.4"/>
+  <line x1="195" y1="295" x2="315" y2="295" stroke="#6B4535" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Keypad housing (right side of door) -->
+  <rect x="335" y="270" width="60" height="80"
+    fill="#2C3E50"
+    stroke="#1A252F"
+    stroke-width="2"
+    rx="4"/>
+
+  <!-- Keypad screen (top) -->
+  <rect x="343" y="278" width="44" height="20"
+    fill="#1E3A2F"
+    stroke="#0F1F1A"
+    stroke-width="1"
+    rx="2"/>
+
+  <!-- Display text placeholder -->
+  <rect x="348" y="283" width="34" height="10"
+    fill="#00FF00"
+    opacity="0.3"
+    rx="1"/>
+
+  <!-- Keypad buttons (3x4 grid) -->
+  <!-- Row 1: 1, 2, 3 -->
+  <circle cx="352" cy="313" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="352" y="316" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">1</text>
+
+  <circle cx="365" cy="313" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="365" y="316" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">2</text>
+
+  <circle cx="378" cy="313" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="378" y="316" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">3</text>
+
+  <!-- Row 2: 4, 5, 6 -->
+  <circle cx="352" cy="326" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="352" y="329" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">4</text>
+
+  <circle cx="365" cy="326" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="365" y="329" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">5</text>
+
+  <circle cx="378" cy="326" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="378" y="329" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">6</text>
+
+  <!-- Row 3: 7, 8, 9 -->
+  <circle cx="352" cy="339" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="352" y="342" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">7</text>
+
+  <circle cx="365" cy="339" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="365" y="342" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">8</text>
+
+  <circle cx="378" cy="339" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="378" y="342" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">9</text>
+
+  <!-- Row 4: *, 0, # -->
+  <circle cx="352" cy="352" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="352" y="355" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">*</text>
+
+  <circle cx="365" cy="352" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="365" y="355" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">0</text>
+
+  <circle cx="378" cy="352" r="6" fill="#34495E" stroke="#1A252F" stroke-width="1"/>
+  <text x="378" y="355" font-family="Arial, sans-serif" font-size="8" fill="#ECF0F1" text-anchor="middle">#</text>
+
+  <!-- Door handle (left side) -->
+  <ellipse cx="195" cy="300" rx="8" ry="15"
+    fill="#C0C0C0"
+    stroke="#808080"
+    stroke-width="1"/>
+
+  <!-- Handle detail -->
+  <ellipse cx="195" cy="300" rx="4" ry="8"
+    fill="#A0A0A0"/>
+
+  <!-- "EXIT" sign above door -->
+  <rect x="190" y="80" width="130" height="25"
+    fill="#C62828"
+    stroke="#8B0000"
+    stroke-width="2"
+    rx="3"/>
+
+  <text x="255" y="97"
+    font-family="Arial Black, sans-serif"
+    font-size="16"
+    font-weight="bold"
+    fill="#FFFFFF"
+    text-anchor="middle">EXIT</text>
+
+  <!-- Shadow under door -->
+  <ellipse cx="255" cy="470" rx="85" ry="10" fill="#000000" opacity="0.2"/>
+
+  <!-- Lock indicator light on keypad -->
+  <circle cx="387" cy="283" r="3" fill="#E74C3C" opacity="0.8"/>
+</svg>
