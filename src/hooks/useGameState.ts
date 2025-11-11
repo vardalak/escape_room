@@ -17,6 +17,7 @@ export function useGameState(experienceId: string = 'training_basement') {
   const [inventory, setInventory] = useState<any[]>([]);
   const [gameWon, setGameWon] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Load the experience
   useEffect(() => {
@@ -42,6 +43,9 @@ export function useGameState(experienceId: string = 'training_basement') {
 
           // Update inventory
           updateInventory();
+
+          // Force re-render to pick up item visibility changes
+          setRefreshKey(prev => prev + 1);
 
           // Check win condition
           if (exp.checkCompletion()) {
@@ -107,6 +111,7 @@ export function useGameState(experienceId: string = 'training_basement') {
     inventory,
     gameWon,
     message,
+    refreshKey,
     examineItem,
     openContainer,
     takeItem,

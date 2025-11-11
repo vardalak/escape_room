@@ -30,6 +30,7 @@ export interface ItemConfig {
   category: ItemCategory;
   type?: string;
   isVisible?: boolean;
+  isHidden?: boolean;
   isInteractive?: boolean;
   isExaminable?: boolean;
   isPortable?: boolean;
@@ -41,6 +42,7 @@ export interface ItemConfig {
   examineTrigger?: string;
   isLocked?: boolean;
   keyId?: string;
+  leadsTo?: string; // For DOOR items: which room this door leads to
 }
 
 export abstract class Item {
@@ -51,6 +53,7 @@ export abstract class Item {
   type?: string;
 
   isVisible: boolean;
+  isHidden: boolean;
   isInteractive: boolean;
   isExaminable: boolean;
   isPortable: boolean;
@@ -65,6 +68,7 @@ export abstract class Item {
   examineTrigger?: string;
   isLocked: boolean;
   keyId?: string;
+  leadsTo?: string; // For DOOR items: which room this door leads to
 
   constructor(config: ItemConfig) {
     this.id = config.id;
@@ -72,6 +76,7 @@ export abstract class Item {
     this.description = config.description;
     this.category = config.category;
     this.type = config.type;
+    this.isHidden = config.isHidden || false;
     this.isVisible = config.isVisible !== false;
     this.isInteractive = config.isInteractive || false;
     this.isExaminable = config.isExaminable !== false;
@@ -84,6 +89,7 @@ export abstract class Item {
     this.examineTrigger = config.examineTrigger;
     this.isLocked = config.isLocked || false;
     this.keyId = config.keyId;
+    this.leadsTo = config.leadsTo;
 
     // Initialize contained and surface items if provided
     if (config.containedItems) {

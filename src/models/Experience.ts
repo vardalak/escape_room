@@ -186,7 +186,14 @@ export class Experience {
           break;
 
         case 'ItemReward':
-          // Handle item rewards
+          // Reveal hidden items
+          if (reward.itemId) {
+            this.revealItem(reward.itemId);
+          }
+          // Hide items (for cleanup after examination)
+          if (reward.hideItemId) {
+            this.hideItem(reward.hideItemId);
+          }
           break;
 
         case 'InformationReward':
@@ -213,6 +220,29 @@ export class Experience {
     const room = this.rooms.get(roomId);
     if (room) {
       room.isHidden = false;
+    }
+  }
+
+  private revealItem(itemId: string): void {
+    // Find the item in the current room
+    const currentRoom = this.getCurrentRoom();
+    if (currentRoom) {
+      const item = currentRoom.findItem(itemId);
+      if (item) {
+        item.isVisible = true;
+        item.isHidden = false;
+      }
+    }
+  }
+
+  private hideItem(itemId: string): void {
+    // Find and hide the item in the current room
+    const currentRoom = this.getCurrentRoom();
+    if (currentRoom) {
+      const item = currentRoom.findItem(itemId);
+      if (item) {
+        item.isVisible = false;
+      }
     }
   }
 

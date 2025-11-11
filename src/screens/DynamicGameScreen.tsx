@@ -5,6 +5,7 @@ import ExaminationModal from '../components/ExaminationModal';
 import KeypadModal from '../components/KeypadModal';
 import { useGameState } from '../hooks/useGameState';
 import { playerProgressManager } from '../services/PlayerProgressManager';
+import { stateManager } from '../services';
 import { getRoomDisplayItems, getItemExaminationData, handleGenericAction } from '../utils/experienceHelpers';
 
 interface DynamicGameScreenProps {
@@ -19,6 +20,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
     inventory,
     gameWon,
     message,
+    refreshKey,
     examineItem,
     openContainer,
     takeItem,
@@ -68,6 +70,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
 
   // Get current room
   const currentRoom = experience?.getCurrentRoom();
+  console.log('[DynamicGameScreen] Current room:', currentRoom?.id, 'with', currentRoom?.items.length, 'items');
 
   if (!currentRoom) {
     return (
@@ -78,11 +81,21 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
   }
 
   const handleObjectTap = (objectId: string) => {
-    console.log('Tapped object:', objectId);
+    console.log('[handleObjectTap] Tapped object:', objectId);
+
+    // IMPORTANT: Get the current room directly from experience, not from closure
+    const room = experience?.getCurrentRoom();
+    console.log('[handleObjectTap] Current room:', room?.id);
+    console.log('[handleObjectTap] Room items:', room?.items.map(i => i.id).join(', '));
+
+    if (!room) {
+      Alert.alert('Error', 'No room loaded');
+      return;
+    }
 
     // Find the actual item
-    const item = currentRoom?.findItem(objectId);
-    console.log('Found item:', item);
+    const item = room.findItem(objectId);
+    console.log('[handleObjectTap] Found item:', item?.id || 'NULL');
 
     if (!item) {
       Alert.alert('Error', `Could not find item: ${objectId}`);
@@ -99,7 +112,11 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
   };
 
   const handleAction = (actionId: string) => {
-    if (!selectedObjectId || !currentRoom) return;
+    if (!selectedObjectId) return;
+
+    // IMPORTANT: Get the current room directly from experience, not from closure
+    const room = experience?.getCurrentRoom();
+    if (!room) return;
 
     console.log(`Action: ${actionId} on ${selectedObjectId}`);
 
@@ -114,7 +131,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
     const result = handleGenericAction(
       actionId,
       selectedObjectId,
-      currentRoom,
+      room,
       stateCallbacks,
       inventory
     );
@@ -146,6 +163,22 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
         }
         break;
 
+      case 'change_room':
+        // Handle room navigation
+        if ((result as any).roomId) {
+          setExaminationModalVisible(false);
+          const changeResult = stateManager.changeRoom((result as any).roomId);
+          if (changeResult.success) {
+            // Room change successful, state change event will trigger re-render
+            if (result.message) {
+              Alert.alert('', result.message);
+            }
+          } else {
+            Alert.alert('Error', changeResult.message || 'Unable to change rooms');
+          }
+        }
+        break;
+
       case 'error':
         if (result.message) {
           Alert.alert('Error', result.message);
@@ -170,7 +203,8 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
   };
 
   // Get current object data
-  const currentItem = selectedObjectId ? currentRoom.findItem(selectedObjectId) : null;
+  // IMPORTANT: Get current room from experience to avoid closure issues
+  const currentItem = selectedObjectId && currentRoom ? currentRoom.findItem(selectedObjectId) : null;
   const currentObjectData = currentItem ? getItemExaminationData(currentItem, inventory, experience || undefined) : null;
 
   // Debug logging
@@ -189,7 +223,7 @@ export default function DynamicGameScreen({ experienceId, onExit }: DynamicGameS
       }))
     : [];
 
-  // Get display items for the room
+  // Get display items for the room (refreshKey will cause this to re-execute)
   const displayItems = getRoomDisplayItems(currentRoom);
 
   return (
@@ -329,6 +363,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
     borderBottomWidth: 2,
     borderBottomColor: '#4A90E2',
+    zIndex: 10, // Ensure header stays above RoomView
+    elevation: 10, // Android shadow/elevation
   },
   backButton: {
     width: 80,
@@ -373,6 +409,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#4A4A4A',
+    zIndex: 10, // Ensure inventory stays above RoomView
+    elevation: 10, // Android shadow/elevation
   },
   inventoryTitle: {
     color: '#4A90E2',

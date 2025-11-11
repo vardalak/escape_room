@@ -44,6 +44,28 @@ npx expo start --tunnel --clear
 
 **Scan QR code with Expo Go app on your device to run the game.**
 
+## Experience Validation
+
+Before deploying or testing new experiences, always run the validator to ensure the experience is completable and free of errors:
+
+```bash
+# Validate an experience
+npm run validate <experience_id>
+
+# Examples:
+npm run validate training_basement
+npm run validate sheriffs_last_ride
+```
+
+The validator checks:
+- **Structure** - All required fields and references are valid
+- **Reachability** - All items, keys, and completion criteria can be reached
+- **Room Connectivity** - All rooms (including finalRoomId) are accessible via doors with `leadsTo` properties
+- **Circular Dependencies** - No keys are locked behind doors/containers that require the same key
+- **Puzzle Clues** - Keypad locks have sufficient clues to solve them
+
+**Always validate experiences before committing changes!**
+
 ## Tech Stack
 
 - **Framework:** React Native 0.81.5 with Expo SDK 54.0.0

@@ -25,6 +25,8 @@ interface RoomViewProps {
 }
 
 // Room-specific object configurations
+// TODO: These should eventually move into the experience JSON files to be fully data-driven
+// Currently they define visual rendering properties (scale, width, height) for each item
 const roomConfigurations: { [key: string]: any } = {
   'basement': {  // Training Basement
     objects: [
@@ -40,6 +42,7 @@ const roomConfigurations: { [key: string]: any } = {
       { id: 'cell_bars', x: 150, y: 400, scale: 0.6, width: 256, height: 512 },
       { id: 'jail_cot', x: 700, y: 600, scale: 0.5, width: 512, height: 256 },
       { id: 'brick_wall', x: 400, y: 450, scale: 0.55, width: 512, height: 512 },
+      { id: 'loose_brick', x: 400, y: 480, scale: 0.35, width: 256, height: 256 },
       { id: 'cell_door', x: 250, y: 300, scale: 0.65, width: 512, height: 512 },
       { id: 'barred_window', x: 650, y: 200, scale: 0.4, width: 256, height: 256 },
     ],
@@ -80,9 +83,39 @@ export default function RoomView({ onObjectTap, roomId = 'basement', items = [] 
   const tapStartPosition = useRef({ x: 0, y: 0 });
   const isTwoFingerGesture = useRef(false);
 
+  // Store current filtered objects in a ref so handleTap always uses the latest
+  const currentObjectsRef = useRef<any[]>([]);
+
   // Get objects for current room
   const roomConfig = roomConfigurations[roomId] || roomConfigurations['basement'];
-  const objects = roomConfig.objects || [];
+  const allObjects = roomConfig.objects || [];
+
+  // Filter objects based on item visibility from game state
+  const objects = allObjects.filter(obj => {
+    // Backwards compatibility: If items prop is not provided AND we're in training_basement, show all objects
+    if ((!items || items.length === 0) && roomId === 'basement') {
+      return true;
+    }
+
+    // If items prop is empty but we're NOT in training_basement, hide everything
+    if (!items || items.length === 0) {
+      return false;
+    }
+
+    // Find the corresponding item in the items prop
+    const item = items.find(i => i.id === obj.id);
+
+    // If item not found in the game state, don't show it (it doesn't exist in this room)
+    if (!item) {
+      return false;
+    }
+
+    // Only show if item is visible
+    return item.isVisible === true;
+  });
+
+  // Update the ref with the current filtered objects
+  currentObjectsRef.current = objects;
 
   // Calculate distance between two touches
   const getDistance = (touches: any[]) => {
@@ -181,7 +214,8 @@ export default function RoomView({ onObjectTap, roomId = 'basement', items = [] 
     const svgX = (locationX - currentPan.x) / currentScale;
     const svgY = (locationY - currentPan.y) / currentScale;
 
-    console.log('Tap at:', { locationX, locationY, svgX, svgY, scale: currentScale, pan: currentPan });
+    // Use the ref to get the current filtered objects (not the closure value)
+    const currentObjects = currentObjectsRef.current;
 
     // Check if tap is within any object bounds
     // Objects are transformed with originX/originY at their viewBox center
@@ -189,8 +223,8 @@ export default function RoomView({ onObjectTap, roomId = 'basement', items = [] 
     // Check in REVERSE order (front to back) so floor objects (front) are checked first
     // Order in array: wall objects first, then floor objects
     // So reverse iteration checks floor objects first (they're in front)
-    for (let i = objects.length - 1; i >= 0; i--) {
-      const obj = objects[i];
+    for (let i = currentObjects.length - 1; i >= 0; i--) {
+      const obj = currentObjects[i];
       // Use full viewBox dimensions for hitbox
       const halfWidth = (obj.width * obj.scale) / 2;
       const halfHeight = (obj.height * obj.scale) / 2;
@@ -200,23 +234,16 @@ export default function RoomView({ onObjectTap, roomId = 'basement', items = [] 
       const objTop = obj.y - halfHeight;
       const objBottom = obj.y + halfHeight;
 
-      console.log(`Checking ${obj.id}:`, {
-        bounds: { left: objLeft, right: objRight, top: objTop, bottom: objBottom },
-        tapPoint: { svgX, svgY }
-      });
-
       if (
         svgX >= objLeft &&
         svgX <= objRight &&
         svgY >= objTop &&
         svgY <= objBottom
       ) {
-        console.log(`HIT: ${obj.id}`);
         onObjectTap?.(obj.id);
         return;
       }
     }
-    console.log('No object hit');
   };
 
   // Render individual object based on ID

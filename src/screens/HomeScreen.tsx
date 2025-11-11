@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { playerProgressManager } from '../services/PlayerProgressManager';
+import { experienceManager } from '../services/ExperienceManager';
 
 interface Experience {
   id: string;
@@ -93,6 +95,30 @@ export default function HomeScreen({ onSelectExperience }: HomeScreenProps) {
     onSelectExperience(experienceId);
   };
 
+  const handleResetExperience = async (experienceId: string, experienceName: string) => {
+    Alert.alert(
+      'Reset Progress',
+      `Are you sure you want to reset all progress for "${experienceName}"? This will clear your saved game.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await experienceManager.deleteSave(experienceId);
+              Alert.alert('Success', 'Progress has been reset!');
+              await loadProgress(); // Reload to update UI
+            } catch (error) {
+              console.error('Failed to reset:', error);
+              Alert.alert('Error', 'Failed to reset progress');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -145,11 +171,22 @@ export default function HomeScreen({ onSelectExperience }: HomeScreenProps) {
 
               <Text style={styles.description}>{exp.shortDescription}</Text>
 
-              {/* Play Button */}
-              <View style={styles.playButton}>
-                <Text style={styles.playButtonText}>
-                  {isCompleted ? 'PLAY AGAIN' : 'START'}
-                </Text>
+              {/* Buttons */}
+              <View style={styles.buttonContainer}>
+                <View style={styles.playButton}>
+                  <Text style={styles.playButtonText}>
+                    {isCompleted ? 'PLAY AGAIN' : 'START'}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.resetButton}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    handleResetExperience(exp.id, exp.name);
+                  }}
+                >
+                  <Text style={styles.resetButtonText}>RESET</Text>
+                </TouchableOpacity>
               </View>
             </TouchableOpacity>
           );
@@ -276,7 +313,12 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 16,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
   playButton: {
+    flex: 1,
     backgroundColor: '#4A90E2',
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -287,6 +329,19 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  resetButton: {
+    backgroundColor: '#666666',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resetButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   comingSoonCard: {
     backgroundColor: '#1A1A1A',

@@ -26,6 +26,7 @@ export interface DependencyGraph {
   items: Map<string, ItemNode>;
   triggers: Map<string, TriggerNode>;
   keys: Map<string, KeyNode>;
+  rooms: Map<string, RoomNode>;
 }
 
 export interface ItemNode {
@@ -34,11 +35,21 @@ export interface ItemNode {
   category: string;
   isPortable: boolean;
   location: string; // parent container or 'room'
+  roomId?: string; // which room this item is in
   isLocked: boolean;
   lockTriggerId?: string;
   containedItems: string[];
   requiredToAccess: string[]; // items/keys needed to access this
   keyId?: string; // If this item represents a key/clue
+  examineTrigger?: string; // Examination trigger ID
+  isVisible?: boolean; // Whether item is visible
+  isHidden?: boolean; // Whether item is hidden until revealed
+}
+
+export interface RoomNode {
+  id: string;
+  name: string;
+  connectedRooms: any[]; // room connections
 }
 
 export interface TriggerNode {
@@ -63,6 +74,7 @@ export interface ReachabilityAnalysis {
   unreachableItems: Set<string>;
   unreachableTriggers: Set<string>;
   accessPath: Map<string, string[]>; // item -> path to access it
+  accessibleRooms: Set<string>; // rooms that can be reached
 }
 
 export class ExperienceValidator {
@@ -126,9 +138,15 @@ export class ExperienceValidator {
     const keys = new Map<string, KeyNode>();
 
     // Parse rooms and items
+    const rooms = new Map<string, any>();
     if (this.experienceData.rooms) {
       this.experienceData.rooms.forEach((room: any) => {
-        this.parseItems(room.items || [], 'room', items);
+        rooms.set(room.id, {
+          id: room.id,
+          name: room.name,
+          connectedRooms: room.connectedRooms || [],
+        });
+        this.parseItems(room.items || [], 'room', items, room.id);
       });
     }
 
@@ -158,13 +176,13 @@ export class ExperienceValidator {
       });
     }
 
-    return { items, triggers, keys };
+    return { items, triggers, keys, rooms };
   }
 
   /**
    * Recursively parse items and nested containers
    */
-  private parseItems(items: any[], parentId: string, itemMap: Map<string, ItemNode>): void {
+  private parseItems(items: any[], parentId: string, itemMap: Map<string, ItemNode>, roomId?: string): void {
     items.forEach((item: any) => {
       const containedItemIds = (item.containedItems || []).map((ci: any) => ci.id);
 
@@ -174,21 +192,25 @@ export class ExperienceValidator {
         category: item.category,
         isPortable: item.isPortable || false,
         location: parentId,
+        roomId: roomId, // Track which room this item is in
         isLocked: item.isLocked || false,
         lockTriggerId: item.lockTriggerId,
         containedItems: containedItemIds,
         requiredToAccess: [],
         keyId: item.keyId, // Store keyId if item represents a key/clue
+        examineTrigger: item.examineTrigger, // Track examination triggers
+        isVisible: item.isVisible !== undefined ? item.isVisible : true,
+        isHidden: item.isHidden || false,
       });
 
       // Recursively parse contained items
       if (item.containedItems) {
-        this.parseItems(item.containedItems, item.id, itemMap);
+        this.parseItems(item.containedItems, item.id, itemMap, roomId);
       }
 
       // Parse surface items
       if (item.surfaceItems) {
-        this.parseItems(item.surfaceItems, item.id, itemMap);
+        this.parseItems(item.surfaceItems, item.id, itemMap, roomId);
       }
     });
   }
@@ -371,12 +393,19 @@ export class ExperienceValidator {
     const reachableItems = new Set<string>();
     const reachableTriggers = new Set<string>();
     const accessPath = new Map<string, string[]>();
+    const accessibleRooms = new Set<string>();
 
-    // Start with items in the room that are unlocked
+    // Start with the starting room
+    const startingRoomId = this.experienceData.startingRoomId || (this.experienceData.rooms && this.experienceData.rooms[0]?.id);
+    if (startingRoomId) {
+      accessibleRooms.add(startingRoomId);
+    }
+
+    // Start with items in accessible rooms that are unlocked
     const queue: Array<{ itemId: string; path: string[] }> = [];
 
     graph.items.forEach((item, id) => {
-      if (item.location === 'room' && !item.isLocked) {
+      if (item.location === 'room' && !item.isLocked && item.isVisible && !item.isHidden && item.roomId && accessibleRooms.has(item.roomId)) {
         reachableItems.add(id);
         queue.push({ itemId: id, path: [id] });
         accessPath.set(id, [id]);
@@ -423,6 +452,28 @@ export class ExperienceValidator {
           if (examTrigger) {
             reachableTriggers.add(examTrigger.id);
             hasClues.add(examTrigger.id);
+
+            // Check if this examination trigger gives KeyRewards or ItemRewards
+            const triggerData = this.experienceData.triggers?.find((t: any) => t.id === item.examineTrigger);
+            if (triggerData?.rewards) {
+              triggerData.rewards.forEach((reward: any) => {
+                if (reward.type === 'KeyReward' && reward.keyId) {
+                  availableKeys.add(reward.keyId);
+                  const key = graph.keys.get(reward.keyId);
+                  if (key && key.associatedTriggerId) {
+                    hasClues.add(key.associatedTriggerId);
+                  }
+                }
+                // ItemReward reveals hidden items
+                if (reward.type === 'ItemReward' && reward.itemId) {
+                  const revealedItem = graph.items.get(reward.itemId);
+                  if (revealedItem && !reachableItems.has(reward.itemId)) {
+                    reachableItems.add(reward.itemId);
+                    accessPath.set(reward.itemId, [itemId, `[examine reveals ${reward.itemId}]`]);
+                  }
+                }
+              });
+            }
           }
         }
 
@@ -451,8 +502,137 @@ export class ExperienceValidator {
         });
       });
 
+      // Also check all locked items at room level that might be unlockable with available keys
+      graph.items.forEach((item, itemId) => {
+        // Skip if already reachable
+        if (reachableItems.has(itemId)) return;
+
+        // Only check items in accessible rooms or reachable containers
+        if (item.location === 'room') {
+          if (!item.roomId || !accessibleRooms.has(item.roomId)) return;
+        } else if (!reachableItems.has(item.location)) {
+          return;
+        }
+
+        // Check if this locked item can be unlocked with an available key
+        if (item.isLocked && item.lockTriggerId) {
+          const trigger = graph.triggers.get(item.lockTriggerId);
+          if (trigger) {
+            // PadLock - needs a physical key
+            if (trigger.requiredKey && availableKeys.has(trigger.requiredKey)) {
+              reachableItems.add(itemId);
+              reachableTriggers.add(trigger.id);
+              const newPath = ['room', `[unlock ${itemId} with ${trigger.requiredKey}]`, itemId];
+              accessPath.set(itemId, newPath);
+            }
+          }
+        }
+      });
+
+      // Check for room transitions - if triggers were activated that unlock doors leading to other rooms
+      const startingRoomCount = accessibleRooms.size;
+
+      // NEW: Check doors with leadsTo properties in accessible rooms
+      graph.items.forEach((item, itemId) => {
+        // Skip non-door items or doors without leadsTo
+        if (item.category !== 'DOOR' || !(item as any).leadsTo) return;
+
+        // Skip if door is not in an accessible room
+        if (!item.roomId || !accessibleRooms.has(item.roomId)) return;
+
+        const targetRoomId = (item as any).leadsTo;
+        if (accessibleRooms.has(targetRoomId)) return; // Already accessible
+
+        // Check if door is unlocked or can be unlocked
+        if (!item.isLocked) {
+          // Door is already unlocked - room is accessible
+          accessibleRooms.add(targetRoomId);
+        } else if (item.lockTriggerId) {
+          // Check if we can unlock this door
+          const trigger = graph.triggers.get(item.lockTriggerId);
+          if (trigger) {
+            // PadLock - check if we have the key
+            if (trigger.requiredKey && availableKeys.has(trigger.requiredKey)) {
+              accessibleRooms.add(targetRoomId);
+              reachableTriggers.add(trigger.id);
+            }
+            // KeypadLock - check if we have the clues
+            else if (trigger.type === 'KeypadLock' && hasClues.has(trigger.id)) {
+              accessibleRooms.add(targetRoomId);
+              reachableTriggers.add(trigger.id);
+            }
+          }
+        }
+      });
+
+      // LEGACY: Also check old connectedRooms format for backwards compatibility
+      graph.rooms.forEach((room, roomId) => {
+        if (accessibleRooms.has(roomId)) {
+          // Check connected rooms
+          room.connectedRooms.forEach((connection: any) => {
+            const targetRoomId = connection.connectedRoomId;
+            if (accessibleRooms.has(targetRoomId)) return; // Already accessible
+
+            // Check if this connection is unlocked
+            if (!connection.isLocked || !connection.requiredTrigger) {
+              // Unlocked connection - room is accessible
+              accessibleRooms.add(targetRoomId);
+            } else {
+              // Check if we've activated the required trigger
+              if (reachableTriggers.has(connection.requiredTrigger)) {
+                accessibleRooms.add(targetRoomId);
+              }
+            }
+          });
+        }
+      });
+
+      // If new rooms became accessible, add their items to reachable set
+      if (accessibleRooms.size > startingRoomCount) {
+        graph.items.forEach((item, itemId) => {
+          if (reachableItems.has(itemId)) return;
+          if (item.location === 'room' && !item.isLocked && item.isVisible && !item.isHidden && item.roomId && accessibleRooms.has(item.roomId)) {
+            reachableItems.add(itemId);
+            accessPath.set(itemId, [item.roomId, itemId]);
+          }
+        });
+      }
+
+      // Check keypad locks during each iteration
+      graph.triggers.forEach((trigger, id) => {
+        if (trigger.type === 'KeypadLock' && !reachableTriggers.has(id)) {
+          const relatedKeys = Array.from(graph.keys.values()).filter(
+            k => k.associatedTriggerId === id
+          );
+
+          const hasAccessToClues = relatedKeys.some(k => {
+            if (availableKeys.has(k.id)) return true;
+            const keyItem = graph.items.get(k.id);
+            if (keyItem && reachableItems.has(k.id)) return true;
+            const itemWithKey = Array.from(graph.items.values()).find(
+              item => item.isPortable && reachableItems.has(item.id) && item.keyId === k.id
+            );
+            if (itemWithKey) return true;
+            return false;
+          });
+
+          if (hasAccessToClues || hasClues.has(id)) {
+            reachableTriggers.add(id);
+
+            // Unlock the item this trigger controls
+            if (trigger.unlocks) {
+              const unlockedItem = graph.items.get(trigger.unlocks);
+              if (unlockedItem && !reachableItems.has(trigger.unlocks)) {
+                reachableItems.add(trigger.unlocks);
+                accessPath.set(trigger.unlocks, ['keypad', trigger.unlocks]);
+              }
+            }
+          }
+        }
+      });
+
       // Check if we found new items or keys in this iteration
-      if (reachableItems.size > startingReachableCount || availableKeys.size > startingKeyCount) {
+      if (reachableItems.size > startingReachableCount || availableKeys.size > startingKeyCount || accessibleRooms.size > startingRoomCount) {
         foundNewItems = true;
       }
     }
@@ -494,7 +674,43 @@ export class ExperienceValidator {
         // If we have access to any clue for this keypad, mark it as reachable
         if (hasAccessToClues || hasClues.has(id)) {
           reachableTriggers.add(id);
+
+          // Also mark the item this trigger unlocks as reachable
+          if (trigger.unlocks) {
+            const unlockedItem = graph.items.get(trigger.unlocks);
+            if (unlockedItem && !reachableItems.has(trigger.unlocks)) {
+              reachableItems.add(trigger.unlocks);
+              accessPath.set(trigger.unlocks, ['keypad', trigger.unlocks]);
+            }
+          }
         }
+      }
+    });
+
+    // Check again for room transitions after keypad triggers are processed
+    graph.rooms.forEach((room, roomId) => {
+      if (accessibleRooms.has(roomId)) {
+        room.connectedRooms.forEach((connection: any) => {
+          const targetRoomId = connection.connectedRoomId;
+          if (accessibleRooms.has(targetRoomId)) return;
+
+          if (!connection.isLocked || !connection.requiredTrigger) {
+            accessibleRooms.add(targetRoomId);
+          } else {
+            if (reachableTriggers.has(connection.requiredTrigger)) {
+              accessibleRooms.add(targetRoomId);
+            }
+          }
+        });
+      }
+    });
+
+    // Add items from newly accessible rooms
+    graph.items.forEach((item, itemId) => {
+      if (reachableItems.has(itemId)) return;
+      if (item.location === 'room' && !item.isLocked && item.isVisible && !item.isHidden && item.roomId && accessibleRooms.has(item.roomId)) {
+        reachableItems.add(itemId);
+        accessPath.set(itemId, [item.roomId, itemId]);
       }
     });
 
@@ -519,6 +735,7 @@ export class ExperienceValidator {
       unreachableItems,
       unreachableTriggers,
       accessPath,
+      accessibleRooms,
     };
   }
 
@@ -526,6 +743,22 @@ export class ExperienceValidator {
    * Validate reachability of completion criteria
    */
   private validateReachability(reachability: ReachabilityAnalysis): void {
+    // Check if final room is reachable (for multi-room experiences)
+    if (this.experienceData.finalRoomId) {
+      if (!reachability.accessibleRooms.has(this.experienceData.finalRoomId)) {
+        this.errors.push({
+          type: 'error',
+          category: 'reachability',
+          message: `Final room "${this.experienceData.finalRoomId}" is not reachable from starting room "${this.experienceData.startingRoomId}"`,
+          details: {
+            finalRoomId: this.experienceData.finalRoomId,
+            startingRoomId: this.experienceData.startingRoomId,
+            accessibleRooms: Array.from(reachability.accessibleRooms)
+          },
+        });
+      }
+    }
+
     // Check if completion criteria are reachable
     this.experienceData.completionCriteria?.forEach((criteria: any) => {
       if (criteria.type === 'trigger_activated') {
@@ -653,6 +886,15 @@ export class ExperienceValidator {
     console.log(`  Unreachable Items: ${report.reachabilityAnalysis.unreachableItems.size}`);
     console.log(`  Reachable Triggers: ${report.reachabilityAnalysis.reachableTriggers.size}`);
     console.log('');
+
+    // Print detailed reachability for debugging
+    if (process.env.VERBOSE === '1' || process.env.VERBOSE === 'true') {
+      console.log('🔍 DETAILED REACHABILITY:');
+      console.log('  Reachable Items:', Array.from(report.reachabilityAnalysis.reachableItems).join(', '));
+      console.log('  Unreachable Items:', Array.from(report.reachabilityAnalysis.unreachableItems).join(', '));
+      console.log('  Reachable Triggers:', Array.from(report.reachabilityAnalysis.reachableTriggers).join(', '));
+      console.log('');
+    }
 
     console.log('═══════════════════════════════════════════════════════════\n');
   }

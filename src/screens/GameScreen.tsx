@@ -12,18 +12,23 @@ interface GameScreenProps {
 }
 
 export default function GameScreen({ experienceId, onExit }: GameScreenProps) {
+  console.log('[GameScreen] Component rendering START');
+
   const {
     experience,
     loading,
     inventory,
     gameWon,
     message,
+    refreshKey,
     examineItem,
     openContainer,
     takeItem,
     useKey,
     enterCode,
   } = useGameState(experienceId);
+
+  console.log(`[GameScreen] After useGameState, refreshKey=${refreshKey}`);
 
   const [selectedObject, setSelectedObject] = useState<string | null>(null);
   const [examinationModalVisible, setExaminationModalVisible] = useState(false);
@@ -75,66 +80,100 @@ export default function GameScreen({ experienceId, onExit }: GameScreenProps) {
 
   const handleAction = (actionId: string) => {
     console.log(`Action: ${actionId} on ${selectedObject}`);
+    if (!selectedObject || !experience) return;
+
+    const currentRoom = experience.getCurrentRoom();
+    if (!currentRoom) return;
+
+    const item = currentRoom.findItem(selectedObject);
+    if (!item) return;
 
     // Handle different actions
     switch (actionId) {
-      case 'examine_closer':
-        if (selectedObject === 'poster') {
-          alert('The poster reads: "Welcome, Trainee! Your goal: Escape through the exit door. Search the room for clues and keys. Examine objects carefully - some hide secrets. Combine what you find to unlock your way out. Good luck!"');
-        }
-        break;
+      case 'examine':
+        const examineResult = examineItem(selectedObject);
+        if (examineResult.success) {
+          let msg = examineResult.description;
 
-      case 'peer_closer':
-        if (selectedObject === 'vent') {
-          alert('Peering through the slats, you can see a piece of paper wedged inside. Two numbers are clearly visible: "42". The rest is hidden behind the metal grate.');
-        }
-        break;
-
-      case 'open_top':
-        if (selectedObject === 'filing_cabinet') {
-          const result = openContainer('filing_cabinet_top');
-          if (result.success) {
-            alert('You open the A-M drawer and find a brass key inside!');
-            // Auto-take the key
-            takeItem('brass_key', 'filing_cabinet_top');
+          // If there were triggered results (like ItemReward), show them
+          if (examineResult.triggers && examineResult.triggers.length > 0) {
+            examineResult.triggers.forEach((trigger: any) => {
+              if (trigger.message) {
+                msg += '\n\n' + trigger.message;
+              }
+              // Show rewards information
+              if (trigger.rewards) {
+                trigger.rewards.forEach((reward: any) => {
+                  if (reward.type === 'InformationReward') {
+                    msg += '\n\n' + reward.content;
+                  }
+                });
+              }
+            });
           }
+
+          alert(msg);
+          setExaminationModalVisible(false);
         }
         break;
 
-      case 'open_drawer1':
-      case 'open_drawer2':
-        if (selectedObject === 'desk') {
-          alert('The drawer is empty except for some old paperclips.');
-        }
-        break;
+      case 'open':
+        const openResult = openContainer(selectedObject);
+        if (openResult.success) {
+          if (openResult.items && openResult.items.length > 0) {
+            const itemNames = openResult.items.map(i => i.name).join(', ');
+            alert(`You open the ${item.name} and find: ${itemNames}`);
 
-      case 'try_bottom':
-        if (selectedObject === 'desk') {
-          if (inventory.find(k => k.id === 'brass_key')) {
-            const result = useKey('brass_key', 'desk_middle_drawer_lock');
-            if (result.success) {
-              alert('The brass key fits! The drawer unlocks. Inside you find a crumpled note with two numbers scrawled on it: "17"');
-            } else {
-              alert('Something went wrong: ' + result.message);
-            }
+            // Auto-take portable items
+            openResult.items.forEach(i => {
+              if (i.isPortable) {
+                takeItem(i.id, selectedObject);
+              }
+            });
           } else {
-            alert('The drawer is locked. You need a key.');
+            alert(`The ${item.name} is empty.`);
           }
+          setExaminationModalVisible(false);
+        } else {
+          alert(openResult.message);
         }
         break;
 
-      case 'examine_lock':
-        alert('It\'s a standard padlock. Looks like it needs a small brass key.');
+      case 'take':
+        const takeResult = takeItem(selectedObject);
+        if (takeResult.success) {
+          alert(`Took ${item.name}`);
+          setExaminationModalVisible(false);
+        } else {
+          alert(takeResult.message);
+        }
+        break;
+
+      case 'use_key':
+        if (item.lockTriggerId) {
+          const trigger = experience.getTrigger(item.lockTriggerId);
+          if (trigger) {
+            const triggerData = experience.triggers.get(item.lockTriggerId);
+            const requiredKey = (triggerData as any).requiredKey;
+            const hasKey = inventory.find(k => k.id === requiredKey);
+
+            if (hasKey) {
+              const keyResult = useKey(hasKey.id, item.lockTriggerId);
+              alert(keyResult.message || (keyResult.success ? 'Unlocked!' : 'Failed to unlock'));
+              if (keyResult.success) {
+                setExaminationModalVisible(false);
+              }
+            }
+          }
+        }
         break;
 
       case 'enter_code':
-        setCurrentTriggerId('exit_door_keypad');
-        setKeypadModalVisible(true);
-        setExaminationModalVisible(false);
-        break;
-
-      case 'examine_keypad':
-        alert('The keypad has buttons 0-9, *, and #. The display shows 4 empty slots, waiting for a 4-digit code.');
+        if (item.lockTriggerId) {
+          setCurrentTriggerId(item.lockTriggerId);
+          setKeypadModalVisible(true);
+          setExaminationModalVisible(false);
+        }
         break;
 
       default:
@@ -156,56 +195,68 @@ export default function GameScreen({ experienceId, onExit }: GameScreenProps) {
     }
   };
 
-  // Get current object data
+  // Get current object data dynamically from experience
   const getObjectData = (objectId: string | null) => {
-    if (!objectId) return null;
+    if (!objectId || !experience) return null;
 
-    const hasKey = inventory.find(k => k.id === 'brass_key');
+    const currentRoom = experience.getCurrentRoom();
+    if (!currentRoom) return null;
 
-    const objectData: { [key: string]: any } = {
-      poster: {
-        name: 'Motivational Poster',
-        description: 'A framed poster with "START HERE" in bold letters and a red arrow pointing down. It appears to have instructions for new trainees.',
-        actions: [
-          { id: 'examine_closer', label: 'Read the poster' },
-        ],
-      },
-      vent: {
-        name: 'Ventilation Grate',
-        description: 'A metal grate with horizontal slats. Through the gaps, you can barely make out a piece of paper wedged inside with some numbers visible.',
-        actions: [
-          { id: 'peer_closer', label: 'Peer through the slats' },
-        ],
-      },
-      filing_cabinet: {
-        name: 'Filing Cabinet',
-        description: 'A grey metal filing cabinet. Top drawer (A-M) shows a green unlocked indicator. Bottom drawer (N-Z) is locked.',
-        actions: [
-          { id: 'open_top', label: 'Open top drawer (A-M)' },
-          { id: 'try_bottom', label: 'Try bottom drawer (N-Z)', disabled: true },
-        ],
-      },
-      desk: {
-        name: 'Desk',
-        description: 'A wooden desk with three drawers. Top two are unlocked and empty. Bottom drawer has a padlock.' + (hasKey ? ' You have a brass key that might fit.' : ''),
-        actions: [
-          { id: 'open_drawer1', label: 'Open top drawer' },
-          { id: 'open_drawer2', label: 'Open middle drawer' },
-          { id: 'try_bottom', label: hasKey ? 'Unlock bottom drawer with brass key' : 'Try bottom drawer (locked)', disabled: !hasKey },
-          { id: 'examine_lock', label: 'Examine the padlock' },
-        ],
-      },
-      exit_door: {
-        name: 'Exit Door',
-        description: 'A sturdy wooden door with an EXIT sign. The keypad displays a red locked light and 4 empty digit slots.\n\nCode: ____',
-        actions: [
-          { id: 'enter_code', label: 'Enter code on keypad' },
-          { id: 'examine_keypad', label: 'Examine keypad' },
-        ],
-      },
+    const item = currentRoom.findItem(objectId);
+    if (!item) return null;
+
+    console.log('Found item:', item.toJSON());
+
+    // Build actions based on item properties
+    const actions: any[] = [];
+
+    // Always allow examination
+    if (item.isExaminable) {
+      actions.push({ id: 'examine', label: 'Examine' });
+    }
+
+    // If it's a container, allow opening
+    if (item.category === 'CONTAINER' && !item.isLocked) {
+      actions.push({ id: 'open', label: 'Open' });
+    }
+
+    // If it's locked and has a trigger, show unlock option
+    if (item.isLocked && item.lockTriggerId) {
+      const trigger = experience.getTrigger(item.lockTriggerId);
+      if (trigger) {
+        // Check what type of trigger it is
+        const triggerData = experience.triggers.get(item.lockTriggerId);
+        if (triggerData?.type === 'KeypadLock') {
+          actions.push({ id: 'enter_code', label: 'Enter code' });
+        } else if (triggerData?.type === 'PadLock') {
+          // Check if player has the required key
+          const requiredKey = (triggerData as any).requiredKey;
+          const hasKey = inventory.find(k => k.id === requiredKey);
+          actions.push({
+            id: 'use_key',
+            label: hasKey ? `Use ${hasKey.name}` : 'Unlock (need key)',
+            disabled: !hasKey
+          });
+        }
+      }
+    }
+
+    // If portable, allow taking
+    if (item.isPortable) {
+      actions.push({ id: 'take', label: 'Take' });
+    }
+
+    console.log('Current object data:', {
+      name: item.name,
+      description: item.description,
+      actionsCount: actions.length
+    });
+
+    return {
+      name: item.name,
+      description: item.description,
+      actions
     };
-
-    return objectData[objectId];
   };
 
   const currentObject = getObjectData(selectedObject);
@@ -215,6 +266,12 @@ export default function GameScreen({ experienceId, onExit }: GameScreenProps) {
         onPress: () => handleAction(action.id),
       }))
     : [];
+
+  // Get current room items - create new array reference to force re-render
+  // refreshKey changes when state updates, causing this to re-execute
+  const currentRoom = experience?.getCurrentRoom();
+  const roomItems = currentRoom ? [...currentRoom.items] : undefined;
+  console.log(`[GameScreen] Rendering with ${roomItems?.length || 0} room items (refreshKey=${refreshKey})`);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -254,7 +311,11 @@ export default function GameScreen({ experienceId, onExit }: GameScreenProps) {
       )}
 
       {/* Room View */}
-      <RoomView onObjectTap={handleObjectTap} />
+      <RoomView
+        onObjectTap={handleObjectTap}
+        roomId={experience?.globalState.currentRoomId}
+        items={roomItems}
+      />
 
       {/* Examination Modal */}
       <ExaminationModal

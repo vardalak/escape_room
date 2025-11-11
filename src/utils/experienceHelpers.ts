@@ -122,6 +122,13 @@ export function getItemExaminationData(item: Item, inventory: any[], experience?
       }
     } else {
       // Door is unlocked, can go through
+      if ((item as any).leadsTo) {
+        data.actions.push({
+          id: 'go_through_door',
+          label: 'Go through door',
+          leadsTo: (item as any).leadsTo,
+        });
+      }
       data.actions.push({
         id: 'examine',
         label: 'Examine door',
@@ -386,6 +393,17 @@ export function handleGenericAction(
         };
       }
       return { type: 'alert', message: 'Nothing on the surface.' };
+
+    case 'go_through_door':
+      // Return a special type indicating room change is needed
+      if ((item as any).leadsTo) {
+        return {
+          type: 'change_room',
+          roomId: (item as any).leadsTo,
+          message: `You go through the ${item.name}...`
+        };
+      }
+      return { type: 'alert', message: 'This door doesn\'t lead anywhere.' };
 
     default:
       return { type: 'alert', message: `Action "${actionId}" not implemented yet.` };
