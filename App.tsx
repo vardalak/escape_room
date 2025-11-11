@@ -3,13 +3,13 @@ import { SafeAreaView, StyleSheet, Text, View, Alert } from 'react-native';
 import RoomView from './src/components/RoomView';
 
 export default function App() {
-  const [selectedObject, setSelectedObject] = useState(null);
+  const [selectedObject, setSelectedObject] = useState<string | null>(null);
 
-  const handleObjectTap = (objectId) => {
+  const handleObjectTap = (objectId: string) => {
     setSelectedObject(objectId);
 
     // Show which object was tapped
-    const objectNames = {
+    const objectNames: Record<string, string> = {
       desk: 'Desk',
       filing_cabinet: 'Filing Cabinet',
       poster: 'Motivational Poster',

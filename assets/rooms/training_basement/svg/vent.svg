@@ -1,0 +1,102 @@
+<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ventilation Grate -->
+
+  <!-- Outer frame (metal) -->
+  <rect x="20" y="80" width="216" height="96"
+    fill="#8A8A8A"
+    stroke="#5A5A5A"
+    stroke-width="3"
+    rx="2"/>
+
+  <!-- Inner recess -->
+  <rect x="28" y="88" width="200" height="80"
+    fill="#3A3A3A"
+    stroke="#2A2A2A"
+    stroke-width="1"/>
+
+  <!-- Horizontal slats (angled for depth) -->
+  <g id="slats">
+    <!-- Slat 1 -->
+    <polygon
+      points="32,95 228,95 228,102 32,105"
+      fill="#6A6A6A"
+      stroke="#4A4A4A"
+      stroke-width="1"/>
+
+    <!-- Slat 2 -->
+    <polygon
+      points="32,110 228,110 228,117 32,120"
+      fill="#6A6A6A"
+      stroke="#4A4A4A"
+      stroke-width="1"/>
+
+    <!-- Slat 3 -->
+    <polygon
+      points="32,125 228,125 228,132 32,135"
+      fill="#6A6A6A"
+      stroke="#4A4A4A"
+      stroke-width="1"/>
+
+    <!-- Slat 4 -->
+    <polygon
+      points="32,140 228,140 228,147 32,150"
+      fill="#6A6A6A"
+      stroke="#4A4A4A"
+      stroke-width="1"/>
+
+    <!-- Slat 5 -->
+    <polygon
+      points="32,155 228,155 228,162 32,165"
+      fill="#6A6A6A"
+      stroke="#4A4A4A"
+      stroke-width="1"/>
+  </g>
+
+  <!-- Screw holes in corners -->
+  <circle cx="35" cy="93" r="3" fill="#2A2A2A" stroke="#1A1A1A" stroke-width="1"/>
+  <circle cx="221" cy="93" r="3" fill="#2A2A2A" stroke="#1A1A1A" stroke-width="1"/>
+  <circle cx="35" cy="163" r="3" fill="#2A2A2A" stroke="#1A1A1A" stroke-width="1"/>
+  <circle cx="221" cy="163" r="3" fill="#2A2A2A" stroke="#1A1A1A" stroke-width="1"/>
+
+  <!-- Screw details (cross-head) -->
+  <line x1="33" y1="93" x2="37" y2="93" stroke="#4A4A4A" stroke-width="0.5"/>
+  <line x1="35" y1="91" x2="35" y2="95" stroke="#4A4A4A" stroke-width="0.5"/>
+
+  <line x1="219" y1="93" x2="223" y2="93" stroke="#4A4A4A" stroke-width="0.5"/>
+  <line x1="221" y1="91" x2="221" y2="95" stroke="#4A4A4A" stroke-width="0.5"/>
+
+  <line x1="33" y1="163" x2="37" y2="163" stroke="#4A4A4A" stroke-width="0.5"/>
+  <line x1="35" y1="161" x2="35" y2="165" stroke="#4A4A4A" stroke-width="0.5"/>
+
+  <line x1="219" y1="163" x2="223" y2="163" stroke="#4A4A4A" stroke-width="0.5"/>
+  <line x1="221" y1="161" x2="221" y2="165" stroke="#4A4A4A" stroke-width="0.5"/>
+
+  <!-- Shadow/depth behind slats -->
+  <g opacity="0.5">
+    <line x1="32" y1="105" x2="228" y2="105" stroke="#000000" stroke-width="1"/>
+    <line x1="32" y1="120" x2="228" y2="120" stroke="#000000" stroke-width="1"/>
+    <line x1="32" y1="135" x2="228" y2="135" stroke="#000000" stroke-width="1"/>
+    <line x1="32" y1="150" x2="228" y2="150" stroke="#000000" stroke-width="1"/>
+    <line x1="32" y1="165" x2="228" y2="165" stroke="#000000" stroke-width="1"/>
+  </g>
+
+  <!-- Dust/dirt texture (subtle) -->
+  <rect x="28" y="88" width="200" height="80"
+    fill="url(#dustGradient)"
+    opacity="0.15"/>
+
+  <!-- Gradient for dust effect -->
+  <defs>
+    <linearGradient id="dustGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#000000;stop-opacity:0.05" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.2" />
+    </linearGradient>
+  </defs>
+
+  <!-- Hidden clue: Paper visible through slat (partial view of "42--") -->
+  <g opacity="0.6">
+    <rect x="140" y="126" width="30" height="6" fill="#F5F5DC" rx="0.5"/>
+    <text x="142" y="131" font-family="monospace" font-size="5" fill="#333333">42--</text>
+  </g>
+</svg>

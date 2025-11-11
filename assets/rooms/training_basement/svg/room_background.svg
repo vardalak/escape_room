@@ -1,0 +1,59 @@
+<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+  <!-- Isometric Training Basement Room -->
+
+  <!-- Floor -->
+  <polygon
+    points="500,700 200,550 500,400 800,550"
+    fill="#666666"
+    stroke="#444444"
+    stroke-width="2"/>
+
+  <!-- Floor tiles (grid pattern for depth) -->
+  <line x1="500" y1="400" x2="500" y2="700" stroke="#555555" stroke-width="1"/>
+  <line x1="350" y1="475" x2="650" y2="475" stroke="#555555" stroke-width="1"/>
+  <line x1="350" y1="625" x2="650" y2="625" stroke="#555555" stroke-width="1"/>
+  <line x1="275" y1="512" x2="500" y2="625" stroke="#555555" stroke-width="1"/>
+  <line x1="725" y1="512" x2="500" y2="625" stroke="#555555" stroke-width="1"/>
+
+  <!-- Left Wall -->
+  <polygon
+    points="200,550 200,200 500,50 500,400"
+    fill="#888888"
+    stroke="#666666"
+    stroke-width="2"/>
+
+  <!-- Left wall detail lines -->
+  <line x1="200" y1="350" x2="500" y2="200" stroke="#777777" stroke-width="1"/>
+
+  <!-- Right Wall -->
+  <polygon
+    points="500,400 500,50 800,200 800,550"
+    fill="#999999"
+    stroke="#777777"
+    stroke-width="2"/>
+
+  <!-- Right wall detail lines -->
+  <line x1="500" y1="200" x2="800" y2="350" stroke="#888888" stroke-width="1"/>
+
+  <!-- Ceiling -->
+  <polygon
+    points="200,200 500,50 800,200 500,350"
+    fill="#AAAAAA"
+    stroke="#888888"
+    stroke-width="2"/>
+
+  <!-- Ceiling light fixture (simple) -->
+  <ellipse cx="500" cy="200" rx="30" ry="15" fill="#FFFFCC" opacity="0.7"/>
+  <ellipse cx="500" cy="200" rx="20" ry="10" fill="#FFFF99"/>
+
+  <!-- Light rays (subtle) -->
+  <line x1="500" y1="210" x2="450" y2="550" stroke="#FFFFCC" stroke-width="1" opacity="0.2"/>
+  <line x1="500" y1="210" x2="500" y2="600" stroke="#FFFFCC" stroke-width="1" opacity="0.3"/>
+  <line x1="500" y1="210" x2="550" y2="550" stroke="#FFFFCC" stroke-width="1" opacity="0.2"/>
+
+  <!-- Shadow in back corner -->
+  <polygon
+    points="200,200 300,150 300,400 200,450"
+    fill="#000000"
+    opacity="0.15"/>
+</svg>
